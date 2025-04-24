@@ -1,0 +1,37 @@
+﻿@model IEnumerable<InvoiceMaker.Application.Dto.InvoiceDto>
+
+@{
+    ViewData["Title"] = "InvoiceIndex";
+}
+
+<h1>InvoiceIndex</h1>
+
+<p>
+    <a asp-action="CreateFullInvoice" class="btn btn-secondary">Create New</a>
+</p>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    @foreach (var invoice in Model)
+    {
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title">Faktura: @invoice.Number</h5>
+                    <p class="card-text">
+                        <strong>Data wystawienia:</strong> @invoice.IssueDate.ToShortDateString()<br />
+                        <strong>Data sprzedaży:</strong> @invoice.SaleDate.ToShortDateString()<br />
+                        <strong>Miejsce:</strong> @invoice.Place<br />
+                        <strong>Typ płatności:</strong> @invoice.PaymentType<br />
+                        <strong>Nabywca:</strong> @invoice.Buyer?.Name<br />
+                        <strong>Sprzedawca:</strong> @invoice.Seller?.Name
+                    </p>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <a asp-controller="Invoice" asp-action="Details" asp-route-id="@invoice.Id" class="btn btn-sm btn-outline-primary">Szczegóły</a>
+                    <a asp-controller="Invoice" asp-action="Edit" asp-route-id="@invoice.Id" class="btn btn-sm btn-outline-secondary">Edytuj</a>
+                    <a asp-controller="Invoice" asp-action="Delete" asp-route-id="@invoice.Id" class="btn btn-sm btn-outline-danger">Usuń</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

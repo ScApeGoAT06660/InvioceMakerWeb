@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using InvoiceMaker.Application.Dto;
+using MediatR;
+
+namespace InvoiceMaker.Application.Commands.CreateBuyers
+{
+    public class CreateBuyerCommand : BuyerDto, IRequest<BuyerDto>
+    {
+    }
+}

@@ -1,0 +1,170 @@
+﻿@using InvoiceMaker.Application.Commands.Create
+@model CreateFullInvoiceCommand
+
+@{
+    ViewData["Title"] = "Create Complete Invoice";
+}
+
+<h2>Create Complete Invoice</h2>
+
+<form asp-action="CreateFullInvoice" method="post" enctype="multipart/form-data">
+    <hr />
+    <h4>Seller</h4>
+    <div class="mb-3">
+        <label asp-for="SellerDto.Name" class="form-label"></label>
+        <input asp-for="SellerDto.Name" class="form-control" />
+        <span asp-validation-for="SellerDto.Name" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="SellerDto.VATID" class="form-label"></label>
+        <input asp-for="SellerDto.VATID" class="form-control" />
+        <span asp-validation-for="SellerDto.VATID" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="SellerDto.StreetAndNo" class="form-label"></label>
+        <input asp-for="SellerDto.StreetAndNo" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="SellerDto.Postcode" class="form-label"></label>
+        <input asp-for="SellerDto.Postcode" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="SellerDto.City" class="form-label"></label>
+        <input asp-for="SellerDto.City" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="SellerDto.BankAccount" class="form-label"></label>
+        <input asp-for="SellerDto.BankAccount" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SellerDto.SWIFT" class="form-label"></label>
+        <input asp-for="SellerDto.SWIFT" class="form-control" />
+        <span asp-validation-for="SellerDto.SWIFT" class="text-danger"></span>
+    </div>
+
+
+    <hr />
+    <h4>Buyer</h4>
+    <div class="mb-3">
+        <label asp-for="BuyerDto.Name" class="form-label"></label>
+        <input asp-for="BuyerDto.Name" class="form-control" />
+        <span asp-validation-for="BuyerDto.Name" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="BuyerDto.VATID" class="form-label"></label>
+        <input asp-for="BuyerDto.VATID" class="form-control" />
+        <span asp-validation-for="BuyerDto.VATID" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="BuyerDto.StreetAndNo" class="form-label"></label>
+        <input asp-for="BuyerDto.StreetAndNo" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="BuyerDto.Postcode" class="form-label"></label>
+        <input asp-for="BuyerDto.Postcode" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="BuyerDto.City" class="form-label"></label>
+        <input asp-for="BuyerDto.City" class="form-control" />
+    </div>
+    
+    <hr />
+    <h4>Items</h4>
+    @for (int i = 0; i < Model.ItemsDto.Count; i++)
+    {
+        <div class="border p-3 mb-3">
+            <h5>Item @(@i + 1)</h5>
+            <div class="mb-3">
+                <label asp-for="ItemsDto[@i].Position" class="form-label"></label>
+                <input asp-for="ItemsDto[@i].Position" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="ItemsDto[@i].Name" class="form-label"></label>
+                <input asp-for="ItemsDto[@i].Name" class="form-control" />
+                <span asp-validation-for="ItemsDto[@i].Name" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ItemsDto[@i].Unit" class="form-label"></label>
+                <input asp-for="ItemsDto[@i].Unit" class="form-control" />
+                <span asp-validation-for="ItemsDto[@i].Unit" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ItemsDto[@i].Quantity" class="form-label"></label>
+                <input asp-for="ItemsDto[@i].Quantity" class="form-control" type="number" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="ItemsDto[@i].Netto" class="form-label"></label>
+                <input asp-for="ItemsDto[@i].Netto" class="form-control" />
+                <span asp-validation-for="ItemsDto[@i].Netto" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ItemsDto[@i].VAT" class="form-label"></label>
+                <input asp-for="ItemsDto[@i].VAT" class="form-control" />
+                <span asp-validation-for="ItemsDto[@i].VAT" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="ItemsDto[@i].Brutto" class="form-label"></label>
+                <input asp-for="ItemsDto[@i].Brutto" class="form-control" />
+                <span asp-validation-for="ItemsDto[@i].Brutto" class="text-danger"></span>
+            </div>  
+        </div>
+    }
+    <button type="button" class="btn btn-link" onclick="addItem()">+ Add another item</button>
+
+    <hr />
+    <h4>Invoice</h4>
+    <div class="mb-3">
+        <label asp-for="InvoiceDto.Number" class="form-label"></label>
+        <input asp-for="InvoiceDto.Number" class="form-control" />
+        <span asp-validation-for="InvoiceDto.Number" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="InvoiceDto.IssueDate" class="form-label"></label>
+        <input asp-for="InvoiceDto.IssueDate" class="form-control" type="date" />
+        <span asp-validation-for="InvoiceDto.IssueDate" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="InvoiceDto.SaleDate" class="form-label"></label>
+        <input asp-for="InvoiceDto.SaleDate" class="form-control" type="date" />
+        <span asp-validation-for="InvoiceDto.SaleDate" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="InvoiceDto.Place" class="form-label"></label>
+        <input asp-for="InvoiceDto.Place" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="SelectedPaymentDeadline" class="form-label"></label>
+        <select asp-for="SelectedPaymentDeadline" asp-items="Model.DeadlineOptionsList" class="form-select">
+            <option value="">Wybierz opcję</option>
+        </select>
+    </div>
+	<div class="mb-3">
+		<label asp-for="SelectedPaymentOption" class="form-label"></label>
+		<select asp-for="SelectedPaymentOption" asp-items="Model.PaymentOptionsList" class="form-select">
+			<option value="">Wybierz opcję</option>
+		</select>
+	</div>
+    <div class="mb-3">
+        <label asp-for="InvoiceDto.SellerSignature" class="form-label"></label>
+        <input asp-for="InvoiceDto.SellerSignature" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="InvoiceDto.BuyerSignature" class="form-label"></label>
+        <input asp-for="InvoiceDto.BuyerSignature" class="form-control" />
+    </div>
+    
+    <div class="mb-3">
+        <label asp-for="InvoiceDto.Notes" class="form-label"></label>
+        <input asp-for="InvoiceDto.Notes" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Save All</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
