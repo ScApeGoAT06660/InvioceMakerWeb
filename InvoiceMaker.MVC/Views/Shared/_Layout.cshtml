@@ -1,12 +1,8 @@
 ﻿@using Newtonsoft.Json
 @{
     var notification = TempData["Notification"] != null ?
-            (Notification)JsonConvert.DeserializeObject <Notification>(TempData["Notification"]!.ToString()!)! : null;
-
-
+        (Notification)JsonConvert.DeserializeObject<Notification>(TempData["Notification"]!.ToString()!)! : null;
 }
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,58 +11,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - InvoiceMaker.MVC</title>
     <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/InvoiceMaker.MVC.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/assets/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/assets/css/Footer-Basic.css" />
+    <link rel="stylesheet" href="~/assets/css/Navigation-with-Button.css" />
+    <link rel="stylesheet" href="~/assets/css/styles.css" />
+    <link rel="stylesheet" href="~/assets/css/customstyle.css" />
     <link rel="stylesheet" href="~/lib/toastr.js/toastr.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">InvoiceMaker.MVC</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Invoice" asp-action="InvoiceIndex">Faktury</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Invoice" asp-action="SellerIndex">Sprzedawcy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Invoice" asp-action="BuyerIndex">Kontrahenci</a>
-                        </li>
-                    </ul> 
-                    <partial name = "_LoginPartial" />
-                </div>
+    <nav class="navbar navbar-expand-md bg-dark navigation-clean-button">
+        <div class="container">
+            <a class="navbar-brand text-white align-self-center" asp-controller="Home" asp-action="Index">
+                <img src="~/assets/img/calculator-bill (1).png" />&nbsp; Invoice Maker
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1"
+                    aria-controls="navcol-1" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fas fa-bars text-white"></i>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navcol-1">
+                <ul class="nav navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" asp-controller="Invoice" asp-action="SellerIndex">Sprzedawcy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" asp-controller="Invoice" asp-action="BuyerIndex">Nabywcy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" asp-controller="Invoice" asp-action="InvoiceIndex">Faktury</a>
+                    </li>
+                </ul>
+				<ul class="navbar-nav ms-auto">
+					<partial name="_LoginPartial" />
+				</ul>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+			
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        @RenderBody()
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - InvoiceMaker.MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
+    <div class="footer-basic mt-5">
+        <footer>
+            <div class="social">
+                <i class="fab fa-github fa-4x" style="color: #A2D6C4;"></i>
+            </div>
+            <p class="copyright">Julita Majer © 2025</p>
+        </footer>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -79,6 +75,6 @@
         </script>
     }
 
-    @await RenderSectionAsync("Scripts", required: false)
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

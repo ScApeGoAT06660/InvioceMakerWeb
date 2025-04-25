@@ -7,7 +7,7 @@
 <h1 class="mb-4">Lista sprzedawców</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-success mb-3">+ Dodaj nowego sprzedawcę</a>
+    <a asp-action="Create" class="btn-main">+ Dodaj nowego sprzedawcę</a>
 </p>
 
 <table class="table table-bordered table-striped table-hover align-middle">
@@ -22,7 +22,6 @@
             <th>Bank</th>
             <th>Numer konta</th>
             <th>SWIFT</th>
-            <th>Logo</th>
             <th class="text-center">Akcje</th>
         </tr>
     </thead>
@@ -39,21 +38,15 @@
                 <td>@seller.Bank</td>
                 <td>@seller.BankAccount</td>
                 <td>@seller.SWIFT</td>
-                <td>
-                    @if (!string.IsNullOrEmpty(seller.LogoPath))
-                    {
-                        <img src="@Url.Content(seller.LogoPath)" alt="Logo" style="max-height: 40px;" />
-                    }
-                    else
-                    {
-                        <span class="text-muted">Brak</span>
-                    }
-                </td>
+
                 <td class="text-center">
-                    <a asp-action="Details" asp-route-id="@seller.Id" class="btn btn-sm btn-outline-primary me-1">Szczegóły</a>
-                    <a asp-action="Edit" asp-route-id="@seller.Id" class="btn btn-sm btn-outline-secondary me-1">Edytuj</a>
-                    <a asp-action="Delete" asp-route-id="@seller.Id" class="btn btn-sm btn-outline-danger">Usuń</a>
+                    <div class="d-flex justify-content-center flex-wrap gap-4">
+                        <a asp-action="SellerDetails" asp-route-id="@seller.Id" class="btn-info">Szczegóły</a>
+                        <a asp-action="SellerEdit" asp-route-id="@seller.Id" class="btn-edit">Edytuj</a>
+                        <a asp-action="Delete" asp-route-id="@seller.Id" class="btn-delete">Usuń</a>
+                    </div>
                 </td>
+
             </tr>
         }
     </tbody>

@@ -8,14 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InvoiceMaker.Application.Commands
+namespace InvoiceMaker.Application.Commands.EditInvoice
 {
     internal class EditInvoiceCommandHandler : IRequestHandler<EditInvoiceCommand>
     {
         private readonly IInvoiceMakerRepository _invoiceMakerRepository;
 
         public EditInvoiceCommandHandler(IInvoiceMakerRepository invoiceMakerRepository)
- 
+
         {
             _invoiceMakerRepository = invoiceMakerRepository;
         }

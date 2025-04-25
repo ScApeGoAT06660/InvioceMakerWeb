@@ -118,5 +118,11 @@ namespace InvoiceMaker.Infrastructure.Repositories
         }
 
         public Task Commit() => _dbContext.SaveChangesAsync();
+
+        public async Task<Seller?> GetSellerByID(int value)
+        {
+            var seller = await _dbContext.Sellers.Where(x => x.Id == value).FirstOrDefaultAsync();
+            return seller;
+        }
     }
 }

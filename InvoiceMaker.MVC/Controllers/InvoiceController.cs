@@ -8,11 +8,13 @@ using InvoiceMaker.Application.Commands.CreateFullInvoice;
 using InvoiceMaker.Application.Commands.Create;
 using InvoiceMaker.Application.Queries.GetAll;
 using InvoiceMaker.Application.Queries.GetBy;
-using InvoiceMaker.Application.Commands;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using InvoiceMaker.MVC.Extensions;
+using InvoiceMaker.Application.Commands.EditInvoice;
+using InvoiceMaker.Application.Commands.EditSeller;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace InvoiceMaker.MVC.Controllers
 {
@@ -120,8 +122,6 @@ namespace InvoiceMaker.MVC.Controllers
                     selectedValue: model.SelectedPaymentDeadline
                 );
 
-                Console.WriteLine("ModelState.IsValid: " + ModelState.IsValid);
-
                 if (model.Items == null || !model.Items.Any())
                 {
                     model.Items = new List<ItemDto> { new ItemDto() };
@@ -133,8 +133,6 @@ namespace InvoiceMaker.MVC.Controllers
 
             await _mediator.Send(model);
 
-            
-
             return RedirectToAction(nameof(InvoiceIndex));
         }
 
@@ -145,7 +143,6 @@ namespace InvoiceMaker.MVC.Controllers
             var dto = await _mediator.Send(new GetInvoiceByNumberQuery(id));
             return View(dto);
         }
-
 
         [Route("Invoice/Edit/{id}")]
         public async Task<IActionResult> InvoiceEdit(int id)
@@ -178,6 +175,37 @@ namespace InvoiceMaker.MVC.Controllers
 
             return View(edit);
         }
+
+        [Route("Seller/Edit/{id}")]
+        public async Task<IActionResult> SellerEdit(int id)
+        {
+            var dto = await _mediator.Send(new GetSellerByIdQuery(id));
+            EditSellerCommand edit = _mapper.Map<EditSellerCommand>(dto);
+
+            return View(edit);
+        }
+
+        [HttpPost]
+        [Route("Seller/Edit/{id}")]
+        public async Task<IActionResult> SellerEdit(int id, EditSellerCommand model)
+        {
+            if(!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            await _mediator.Send(model);
+
+            return RedirectToAction(nameof(SellerIndex));
+        }
+
+        [Route("Seller/Details/{id}")]
+        public async Task<IActionResult> SellerDetails(int id)
+        {
+            var dto = await _mediator.Send(new GetSellerByIdQuery(id));
+            return View(dto);
+        }
+
 
         public async Task<IActionResult> InvoiceIndex()
         {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InvoiceMaker.Application.Commands
+namespace InvoiceMaker.Application.Commands.EditInvoice
 {
     internal class EditInvoiceCommandValidator : AbstractValidator<EditInvoiceCommand>
     {

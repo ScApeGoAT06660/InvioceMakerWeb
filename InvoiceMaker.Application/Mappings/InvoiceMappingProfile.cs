@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.Configuration;
-using InvoiceMaker.Application.Commands;
+using InvoiceMaker.Application.Commands.EditInvoice;
+using InvoiceMaker.Application.Commands.EditSeller;
 using InvoiceMaker.Application.Dto;
 using InvoiceMaker.Application.User;
 using InvoiceMaker.Domain;
@@ -32,6 +33,11 @@ namespace InvoiceMaker.Application.Mappings
             CreateMap<Item, ItemDto>().ReverseMap();
 
             CreateMap<InvoiceDto, EditInvoiceCommand>();
+
+            CreateMap<EditSellerCommand, Seller>();
+            CreateMap<SellerDto, EditSellerCommand>();
         }
     }
 }
+
+

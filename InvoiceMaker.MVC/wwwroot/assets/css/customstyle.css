@@ -1,0 +1,71 @@
+﻿.btn-main {
+    background-color: #A2D6C4;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 15px;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: none;
+}
+
+    .btn-main:hover {
+        background-color: #61a38c;
+        text-decoration: none;
+        color: white; 
+    }
+
+.btn-info {
+    background-color: #94B5AE;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: none;
+}
+
+    .btn-info:hover {
+        background-color: #7A9E96;
+        text-decoration: none;
+        color: white;
+    }
+
+.btn-edit {
+    background-color: #4F9981;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: none;
+}
+
+    .btn-edit:hover {
+        background-color: #3C7C6A;
+        text-decoration: none;
+        color: white;
+    }
+
+.btn-delete {
+    background-color: #D96C6C;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: none;
+}
+
+    .btn-delete:hover {
+        background-color: #B55555;
+        text-decoration: none;
+        color: white;
+    }

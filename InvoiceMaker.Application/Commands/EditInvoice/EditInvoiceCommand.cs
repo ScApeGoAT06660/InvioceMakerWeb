@@ -8,7 +8,7 @@ using InvoiceMaker.Application.Dto;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace InvoiceMaker.Application.Commands
+namespace InvoiceMaker.Application.Commands.EditInvoice
 {
     public class EditInvoiceCommand : InvoiceDto, IRequest
     {

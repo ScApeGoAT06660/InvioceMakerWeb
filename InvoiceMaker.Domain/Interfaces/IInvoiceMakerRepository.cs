@@ -22,6 +22,7 @@ namespace InvoiceMaker.Domain.Interfaces
         Task<Invoice?> GetInvoiceById(int value);
         Task<IEnumerable<Invoice>> GetAllInvoices(string userId);
         Task<IEnumerable<Seller>> GetAllSellers();
+        Task<Seller?> GetSellerByID(int value);
         Task<IEnumerable<Buyer>> GetAllBuyers();
         Task Commit();
     }

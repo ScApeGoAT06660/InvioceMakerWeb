@@ -32,6 +32,7 @@ namespace InvoiceMaker.Application.Extansions
                 var userContext = scope.ServiceProvider.GetRequiredService<IUserContext>();
                 cfg.AddProfile(new InvoiceMappingProfile(userContext));
             }).CreateMapper());
+
             //Commands
             services.AddMediatR(typeof(CreateFullInvoiceCommand));
             services.AddMediatR(typeof(CreateInvoiceCommand));
