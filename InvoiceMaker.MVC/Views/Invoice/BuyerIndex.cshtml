@@ -7,7 +7,7 @@
 <h1 class="mb-4">Lista nabywców</h1>
 
 <p>
-    <a asp-action="Create" class="btn-main">+ Dodaj nowego nabywcę</a>
+    <a asp-action="CreateBuyer" class="btn-main">+ Dodaj nowego nabywcę</a>
 </p>
 
 <table class="table table-bordered table-striped table-hover align-middle">
@@ -34,9 +34,11 @@
                 <td>@buyer.City</td>
                 <td class="text-center">
                     <div class="d-flex justify-content-center flex-wrap gap-4">
-                        <a asp-action="Details" asp-route-id="@buyer.Id" class="btn-info">Szczegóły</a>
-                        <a asp-action="Edit" asp-route-id="@buyer.Id" class="btn-edit">Edytuj</a>
-                        <a asp-action="Delete" asp-route-id="@buyer.Id" class="btn-delete">Usuń</a>
+                        <a asp-action="BuyerDetails" asp-route-id="@buyer.Id" class="btn-info">Szczegóły</a>
+                        <a asp-action="BuyerEdit" asp-route-id="@buyer.Id" class="btn-edit">Edytuj</a>
+                        <form asp-action="DeleteBuyer" asp-route-id="@buyer.Id" method="post" style="display:inline;">
+                            <button type="submit" class="btn-delete">Usuń</button>
+                        </form>
                     </div>
                 </td>
             </tr>

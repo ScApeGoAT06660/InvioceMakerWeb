@@ -4,22 +4,16 @@
 
 @{
 
-    ViewData["Title"] = "InvoiceEdit";
+    ViewData["Title"] = @Model.Number + " - edycja";
 }
 
-<h1>Edit @Model.Number</h1>
+<h1>@Model.Number - edycja</h1>
 
-<h4>EditInvoiceCommand</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="InvoiceEdit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
-            </div>
             <div class="form-group">
                 <label asp-for="Number" class="control-label"></label>
                 <input asp-for="Number" class="form-control" />
@@ -50,11 +44,7 @@
                 <input asp-for="BuyerId" class="form-control" />
                 <span asp-validation-for="BuyerId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="BuyerType" class="control-label"></label>
-                <input asp-for="BuyerType" class="form-control" />
-                <span asp-validation-for="BuyerType" class="text-danger"></span>
-            </div>
+
             <div class="mb-3">
                 <label asp-for="SelectedPaymentDeadline" class="form-label"></label>
                 <select asp-for="SelectedPaymentDeadline" asp-items="Model.DeadlineOptionsList" class="form-select">
@@ -84,7 +74,8 @@
                 <input asp-for="Notes" class="form-control" />
                 <span asp-validation-for="Notes" class="text-danger"></span>
             </div>
-            <h4>Pozycja faktury</h4>
+
+            <h4>Pozycje faktury</h4>
 
             <div class="form-group">
                 <label asp-for="Items[0].Name" class="control-label">Nazwa</label>
@@ -116,17 +107,13 @@
                 <label asp-for="Items[0].Brutto" class="control-label">Brutto</label>
                 <input asp-for="Items[0].Brutto" type="text" class="form-control" />
             </div>
-
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">Zapisz</button>
-
-            </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="InvoiceIndex">Back to List</a>
+	<button type="submit" class="btn btn-primary">Zapisz</button>
+    <a asp-action="InvoiceIndex">Wróć do listy</a>
 </div>
 
 @section Scripts {

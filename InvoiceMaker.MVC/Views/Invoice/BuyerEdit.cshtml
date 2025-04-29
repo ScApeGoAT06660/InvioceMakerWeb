@@ -1,4 +1,4 @@
-﻿@model InvoiceMaker.Application.Commands.EditSeller.EditSellerCommand
+﻿@model InvoiceMaker.Application.Commands.EditBuyer.EditBuyerCommand
 
 @{
     ViewData["Title"] = @Model.Name + " - edycja";
@@ -8,8 +8,9 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="SellerEdit">
+        <form asp-action="BuyerEdit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -35,28 +36,13 @@
                 <input asp-for="City" class="form-control" />
                 <span asp-validation-for="City" class="text-danger"></span>
             </div>
-			<div class="form-group">
-				<label asp-for="BankAccount" class="control-label"></label>
-				<input asp-for="BankAccount" class="form-control" />
-				<span asp-validation-for="BankAccount" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="Bank" class="control-label"></label>
-				<input asp-for="Bank" class="form-control" />
-				<span asp-validation-for="Bank" class="text-danger"></span>
-			</div>
-			<div class="form-group">
-				<label asp-for="SWIFT" class="control-label"></label>
-				<input asp-for="SWIFT" class="form-control" />
-				<span asp-validation-for="SWIFT" class="text-danger"></span>
-			</div>
         </form>
     </div>
 </div>
 
 <div>
 	<button type="submit" class="btn btn-primary">Zapisz</button>
-    <a asp-action="SellerIndex">Wróć do listy</a>
+    <a asp-action="BuyerIndex">Wróć do listy</a>
 </div>
 
 @section Scripts {

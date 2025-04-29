@@ -107,13 +107,13 @@ namespace InvoiceMaker.Infrastructure.Repositories
 
         public async Task<IEnumerable<Seller>> GetAllSellers()
         {
-            var sellers = await _dbContext.Sellers.ToListAsync();
+            var sellers = await _dbContext.Sellers.Where(x => x.IsDeleted == false).ToListAsync();
             return sellers;
         }
 
         public async Task<IEnumerable<Buyer>> GetAllBuyers()
         {
-            var buyer = await _dbContext.Buyers.ToListAsync();
+            var buyer = await _dbContext.Buyers.Where(x => x.isDeleted == false).ToListAsync();
             return buyer;
         }
 
@@ -123,6 +123,59 @@ namespace InvoiceMaker.Infrastructure.Repositories
         {
             var seller = await _dbContext.Sellers.Where(x => x.Id == value).FirstOrDefaultAsync();
             return seller;
+        }
+
+        public async Task DeleteSeller(int value)
+        {
+            var seller = await _dbContext.Sellers.Where(x => x.Id == value).FirstOrDefaultAsync();
+
+            bool exist = await _dbContext.Invoices.AnyAsync(i =>  i.SellerId == seller.Id);
+
+            if(exist)
+            {
+                seller.IsDeleted = true;
+            }
+            else
+            {
+                _dbContext.Sellers.Remove(seller);
+            }
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteInvoice(int value)
+        {
+            var invoice = await _dbContext.Invoices
+            .Include(x => x.Items)
+            .FirstOrDefaultAsync(x => x.Id == value);
+
+            _dbContext.Invoices.Remove(invoice);
+
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<Buyer?> GetBuyerByID(int value)
+        {
+            var buyer = await _dbContext.Buyers.Where(x => x.Id == value).FirstOrDefaultAsync();
+            return buyer;
+        }
+
+        public async Task DeleteBuyer(int value)
+        {
+            var buyer = await _dbContext.Buyers.Where(x => x.Id == value).FirstOrDefaultAsync();
+
+            bool exist = await _dbContext.Invoices.AnyAsync(i => i.BuyerId == buyer.Id);
+
+            if (exist)
+            {
+                buyer.isDeleted = true;
+            }
+            else
+            {
+                _dbContext.Buyers.Remove(buyer);
+            }
+
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

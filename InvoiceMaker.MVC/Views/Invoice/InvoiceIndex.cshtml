@@ -29,7 +29,9 @@
                 <div class="card-footer bg-white border-top-0">
                     <a asp-controller="Invoice" asp-action="Details" asp-route-id="@invoice.Id" class="btn-info">Szczegóły</a>
                     <a asp-controller="Invoice" asp-action="Edit" asp-route-id="@invoice.Id" class="btn-edit">Edytuj</a>
-                    <a asp-controller="Invoice" asp-action="Delete" asp-route-id="@invoice.Id" class="btn-delete">Usuń</a>
+                    <form asp-action="DeleteInvoice" asp-route-id = "@invoice.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn-delete">Usuń</button>
+                    </form>
                 </div>
             </div>
         </div>

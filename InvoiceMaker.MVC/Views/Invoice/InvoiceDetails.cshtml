@@ -1,17 +1,15 @@
 ﻿@model InvoiceMaker.Application.Dto.InvoiceDto
 
 @{
-    ViewData["Title"] = "InvoiceDetails";
+    ViewData["Title"] = @Model.Number + " - podgląd";
 }
 
-<h1> @Model.Number - podgląd</h1>
+<h2> @Model.Number - podgląd</h2>
 
 <div>
 
     <hr />
     <dl class="row">
-
-        
         <dt class="col-sm-2">Data wystawienia</dt>
         <dd class="col-sm-10">@Model.IssueDate.ToShortDateString()</dd>
 
@@ -20,6 +18,12 @@
 
         <dt class="col-sm-2">Miejscowość</dt>
         <dd class="col-sm-10">@Model.Place</dd>
+
+        <dt class="col-sm-2">Sprzedawca</dt>
+        <dd class="col-sm-10">@Model.Seller.Name</dd>
+
+        <dt class="col-sm-2">Kontrahent</dt>
+        <dd class="col-sm-10">@Model.Buyer.Name</dd>
 
         <dt class="col-sm-2">Rodzaj płatności</dt>
         <dd class="col-sm-10">@Model.PaymentType</dd>
@@ -67,7 +71,7 @@
  
 </div>
 <div>
-    <a asp-controller="Invoice" asp-action="InvoiceEdit" asp-route-id="@Model.Id">Edytuj</a>
+    <a asp-controller="Invoice" asp-action="InvoiceEdit" asp-route-id="@Model.Id" class="btn btn-primary">Edytuj</a>
 
-    <a asp-action="InvoiceIndex">Back to List</a>
+    <a asp-action="InvoiceIndex">Wróć do listy</a>
 </div>

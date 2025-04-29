@@ -7,7 +7,7 @@
 <h1 class="mb-4">Lista sprzedawców</h1>
 
 <p>
-    <a asp-action="Create" class="btn-main">+ Dodaj nowego sprzedawcę</a>
+    <a asp-action="CreateSeller" class="btn-main">+ Dodaj nowego sprzedawcę</a>
 </p>
 
 <table class="table table-bordered table-striped table-hover align-middle">
@@ -43,7 +43,9 @@
                     <div class="d-flex justify-content-center flex-wrap gap-4">
                         <a asp-action="SellerDetails" asp-route-id="@seller.Id" class="btn-info">Szczegóły</a>
                         <a asp-action="SellerEdit" asp-route-id="@seller.Id" class="btn-edit">Edytuj</a>
-                        <a asp-action="Delete" asp-route-id="@seller.Id" class="btn-delete">Usuń</a>
+                        <form asp-action="DeleteSeller" asp-route-id="@seller.Id" method="post" style="display:inline;">
+                            <button type="submit" class="btn-delete">Usuń</button>
+                        </form>
                     </div>
                 </td>
 

@@ -1,20 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using InvoiceMaker.MVC.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using InvoiceMaker.Application.Dto;
-using MediatR;
-using InvoiceMaker.Application.Queries;
-using InvoiceMaker.Application.Commands.CreateFullInvoice;
+﻿using AutoMapper;
 using InvoiceMaker.Application.Commands.Create;
-using InvoiceMaker.Application.Queries.GetAll;
-using InvoiceMaker.Application.Queries.GetBy;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Newtonsoft.Json;
-using InvoiceMaker.MVC.Extensions;
+using InvoiceMaker.Application.Commands.CreateBuyers;
+using InvoiceMaker.Application.Commands.CreateSeller;
+using InvoiceMaker.Application.Commands.DeleteBuyer;
+using InvoiceMaker.Application.Commands.DeleteInvoice;
+using InvoiceMaker.Application.Commands.DeleteSeller;
+using InvoiceMaker.Application.Commands.EditBuyer;
 using InvoiceMaker.Application.Commands.EditInvoice;
 using InvoiceMaker.Application.Commands.EditSeller;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using InvoiceMaker.Application.Dto;
+using InvoiceMaker.Application.Queries.GetAll;
+using InvoiceMaker.Application.Queries.GetBy;
+using InvoiceMaker.MVC.Extensions;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace InvoiceMaker.MVC.Controllers
 {
@@ -144,6 +145,13 @@ namespace InvoiceMaker.MVC.Controllers
             return View(dto);
         }
 
+        [Route("Buyer/Details/{id}")]
+        public async Task<IActionResult> BuyerDetails(int id)
+        {
+            var dto = await _mediator.Send(new GetBuyerByIdQuery(id));
+            return View(dto);
+        }
+
         [Route("Invoice/Edit/{id}")]
         public async Task<IActionResult> InvoiceEdit(int id)
         {
@@ -199,6 +207,29 @@ namespace InvoiceMaker.MVC.Controllers
             return RedirectToAction(nameof(SellerIndex));
         }
 
+        [Route("Buyer/Edit/{id}")]
+        public async Task<IActionResult> BuyerEdit(int id)
+        {
+            var dto = await _mediator.Send(new GetBuyerByIdQuery(id));
+            EditBuyerCommand edit = _mapper.Map<EditBuyerCommand>(dto);
+
+            return View(edit);
+        }
+
+        [HttpPost]
+        [Route("Buyer/Edit/{id}")]
+        public async Task<IActionResult> BuyerEdit(int id, EditBuyerCommand model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            await _mediator.Send(model);
+
+            return RedirectToAction(nameof(BuyerIndex));
+        }
+
         [Route("Seller/Details/{id}")]
         public async Task<IActionResult> SellerDetails(int id)
         {
@@ -206,6 +237,56 @@ namespace InvoiceMaker.MVC.Controllers
             return View(dto);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreateSeller(CreateSellerCommand model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            await _mediator.Send(model);
+
+            return RedirectToAction(nameof(SellerIndex));
+        }
+
+        public IActionResult CreateSeller()
+        {
+            var command = new CreateSellerCommand();
+            return View(command);
+        }
+
+        public IActionResult CreateBuyer()
+        {
+            var command = new CreateBuyerCommand();
+            return View(command);
+        }
+
+        [HttpPost]
+        [Route("Seller/Delete/{id}")]
+        public async Task<IActionResult> DeleteSeller(int id)
+        {
+            var command = new DeleteSellerCommand { Id = id };
+            await _mediator.Send(command);
+            return RedirectToAction(nameof(SellerIndex));
+        }
+
+        [HttpPost]
+        [Route("Invoice/Delete/{id}")]
+        public async Task<IActionResult> DeleteInvoice(int id)
+        {
+            var command = new DeleteInvoiceCommand { Id = id };
+            await _mediator.Send(command);
+            return RedirectToAction(nameof(InvoiceIndex));
+        }
+
+        [HttpPost]
+        [Route("Buyer/Delete/{id}")]
+        public async Task<IActionResult> DeleteBuyer(int id)
+        {
+            var command = new DeleteBuyerCommand { Id = id };
+            await _mediator.Send(command);
+            return RedirectToAction(nameof(BuyerIndex));
+        }
 
         public async Task<IActionResult> InvoiceIndex()
         {
@@ -224,5 +305,7 @@ namespace InvoiceMaker.MVC.Controllers
             var buyer = await _mediator.Send(new GetAllBuyersQuery());
             return View(buyer);
         }
+
+
     }
 }

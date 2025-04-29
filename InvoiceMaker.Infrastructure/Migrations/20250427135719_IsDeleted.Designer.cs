@@ -4,6 +4,7 @@ using InvoiceMaker.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InvoiceMaker.Infrastructure.Migrations
 {
     [DbContext(typeof(InvoiceMakerDbContext))]
-    partial class InvoiceMakerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250427135719_IsDeleted")]
+    partial class IsDeleted
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -358,9 +361,6 @@ namespace InvoiceMaker.Infrastructure.Migrations
                 {
                     b.HasBaseType("InvoiceMaker.Domain.Trader");
 
-                    b.Property<bool>("isDeleted")
-                        .HasColumnType("bit");
-
                     b.ToTable("Buyers", (string)null);
                 });
 
@@ -373,9 +373,6 @@ namespace InvoiceMaker.Infrastructure.Migrations
 
                     b.Property<string>("BankAccount")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("LogoPath")
                         .HasColumnType("nvarchar(max)");

@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace InvoiceMaker.Domain
 {
-    public class Buyer:Trader
+    public class Buyer : Trader
     {
+        public bool isDeleted { get; set; }
     }
 }

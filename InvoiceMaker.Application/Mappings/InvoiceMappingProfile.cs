@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.Configuration;
+using InvoiceMaker.Application.Commands.EditBuyer;
 using InvoiceMaker.Application.Commands.EditInvoice;
 using InvoiceMaker.Application.Commands.EditSeller;
 using InvoiceMaker.Application.Dto;
@@ -24,18 +25,19 @@ namespace InvoiceMaker.Application.Mappings
             .ForMember(dest => dest.Buyer, opt => opt.Ignore());
 
             CreateMap<Invoice, InvoiceDto>()
-              .ForMember(dest => dest.IsEditable, opt => opt.MapFrom(src => user != null && src.CreatedById == user.Id));
+            .ForMember(dest => dest.IsEditable, opt => opt.MapFrom(src => user != null && src.CreatedById == user.Id));
 
             CreateMap<Seller, SellerDto>().ReverseMap()
             .IncludeMembers(src => src);
+
             CreateMap<Buyer, BuyerDto>().ReverseMap()
             .IncludeMembers(src => src);
+
             CreateMap<Item, ItemDto>().ReverseMap();
-
             CreateMap<InvoiceDto, EditInvoiceCommand>();
-
             CreateMap<EditSellerCommand, Seller>();
             CreateMap<SellerDto, EditSellerCommand>();
+            CreateMap<BuyerDto, EditBuyerCommand>();
         }
     }
 }

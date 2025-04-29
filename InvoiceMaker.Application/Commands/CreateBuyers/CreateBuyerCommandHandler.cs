@@ -30,7 +30,7 @@ namespace InvoiceMaker.Application.Commands.CreateBuyers
             await _invoiceMakerRepository.CreateBuyer(buyer);
 
             var result = _mapper.Map<BuyerDto>(buyer);
-            result.Id = buyer.Id; // upewnij się, że buyer.Id jest uzupełniane po dodaniu do bazy
+            result.Id = buyer.Id;
 
             return result;
         }

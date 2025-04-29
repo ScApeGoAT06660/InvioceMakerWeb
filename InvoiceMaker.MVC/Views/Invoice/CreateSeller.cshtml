@@ -1,14 +1,14 @@
-﻿@model InvoiceMaker.Application.Commands.EditSeller.EditSellerCommand
+﻿@model InvoiceMaker.Application.Commands.CreateSeller.CreateSellerCommand
 
 @{
-    ViewData["Title"] = @Model.Name + " - edycja";
+    ViewData["Title"] = "Dodaj sprzedawcę";
 }
 
-<h2>@Model.Name - edycja</h2>
+<h2>Dodaj sprzedawcę</h2>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="SellerEdit">
+        <form asp-action="CreateSeller">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -50,12 +50,14 @@
 				<input asp-for="SWIFT" class="form-control" />
 				<span asp-validation-for="SWIFT" class="text-danger"></span>
 			</div>
+			<div class="form-group">
+				<button type="submit" class="btn btn-success">Zapisz</button>
+			</div>
         </form>
     </div>
 </div>
 
 <div>
-	<button type="submit" class="btn btn-primary">Zapisz</button>
     <a asp-action="SellerIndex">Wróć do listy</a>
 </div>
 
