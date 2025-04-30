@@ -9,5 +9,6 @@ namespace InvoiceMaker.Domain
     public class Buyer : Trader
     {
         public bool isDeleted { get; set; }
+        public string CreatedById { get; set; }
     }
 }

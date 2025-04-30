@@ -11,7 +11,7 @@
     <div class="row mb-4">
         <div class="col-md-3">
             <label asp-for="InvoiceDto.Number" class="form-label">Numer faktury</label>
-            <input asp-for="InvoiceDto.Number" class="form-control" />
+            <input asp-for="InvoiceDto.Number" readonly class="form-control" />
         </div>
         <div class="col-md-3">
             <label asp-for="InvoiceDto.IssueDate" class="form-label">Data wystawienia</label>
@@ -39,6 +39,10 @@
             <input asp-for="SellerDto.City" class="form-control mb-2" placeholder="Miasto" />
             <input asp-for="SellerDto.BankAccount" class="form-control mb-2" placeholder="Numer konta" />
             <input asp-for="SellerDto.SWIFT" class="form-control mb-2" placeholder="SWIFT" />
+            <input asp-for="SellerDto.Bank" class="form-control mb-2" placeholder="Bank" />
+            <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#SellersModal">
+                <i class="bi bi-file-person"></i> Lista sprzedawców
+            </button>
         </div>
         <div class="col-md-6">
             <h5>Kupujący</h5>
@@ -47,6 +51,10 @@
             <input asp-for="BuyerDto.StreetAndNo" class="form-control mb-2" placeholder="Ulica i numer" />
             <input asp-for="BuyerDto.Postcode" class="form-control mb-2" placeholder="Kod pocztowy" />
             <input asp-for="BuyerDto.City" class="form-control mb-2" placeholder="Miasto" />
+            <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#BuyersModal">
+                <i class="bi bi-file-person"></i> Lista kontrahentów
+            </button>
+
         </div>
     </div>
 
@@ -118,8 +126,112 @@
     </div>
 </form>
 
+
+<!-- SekModal -->
+<div class="modal fade" id="SellersModal" tabindex="-1" role="dialog" aria-labelledby="SellersModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SellersModalLabel">Sprzedawcy</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group">
+                    @foreach (var seller in Model.Sellers)
+                    {
+                        <a href="#"
+                           class="list-group-item list-group-item-action select-seller"
+                           data-name="@seller.Name"
+                           data-vatid="@seller.VATID"
+                           data-street="@seller.StreetAndNo"
+                           data-city="@seller.City"
+                           data-postcode="@seller.Postcode"
+                           data-bankaccount="@seller.BankAccount"
+                           data-swift"="@seller.SWIFT"
+                           data-bank="@seller.Bank">
+                            @seller.Name – @seller.VATID
+                        </a>
+                    }
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="BuyersModal" tabindex="-1" role="dialog" aria-labelledby="BuyersModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="BuyersModalLabel">Kontrahenci</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group">
+                    @foreach (var buyer in Model.Buyers)
+                    {
+                        <a href="#"
+                           class="list-group-item list-group-item-action select-buyer"
+                           data-name="@buyer.Name"
+                           data-vatid="@buyer.VATID"
+                           data-street="@buyer.StreetAndNo"
+                           data-city="@buyer.City"
+                           data-postcode="@buyer.Postcode">
+                            @buyer.Name – @buyer.VATID
+                        </a>
+                    }
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        $(document).on("click", ".select-seller", function () {
+            $("#SellerDto_Name").val($(this).data("name"));
+            $("#SellerDto_VATID").val($(this).data("vatid"));
+            $("#SellerDto_StreetAndNo").val($(this).data("street"));
+            $("#SellerDto_City").val($(this).data("city"));
+            $("#SellerDto_Postcode").val($(this).data("postcode"));
+            $("#SellerDto_BankAccount").val($(this).data("bankaccount"));
+            $("#SellerDto_SWIFT").val($(this).data("swift"));
+            $("#SellerDto_Bank").val($(this).data("bank"));
+            $("#SellersModal").modal("hide");
+        });
+    </script>
+
+    <script>
+        $(document).on("click", ".select-buyer", function () {
+            $("#BuyerDto_Name").val($(this).data("name"));
+            $("#BuyerDto_VATID").val($(this).data("vatid"));
+            $("#BuyerDto_StreetAndNo").val($(this).data("street"));
+            $("#BuyerDto_City").val($(this).data("city"));
+            $("#BuyerDto_Postcode").val($(this).data("postcode"));
+            $("#BuyersModal").modal("hide");
+        });
+    </script>
+
 }

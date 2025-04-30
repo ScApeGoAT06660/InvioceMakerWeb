@@ -26,5 +26,9 @@ namespace InvoiceMaker.Application.Commands.Create
 
         [BindNever]
         public List<SelectListItem> DeadlineOptionsList { get; set; }
+        [BindNever]
+        public List<SellerDto> Sellers { get; set; } = new();
+        public List<BuyerDto> Buyers { get; set; } = new();
+
     }
 }

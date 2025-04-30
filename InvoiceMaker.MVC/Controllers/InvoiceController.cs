@@ -11,6 +11,7 @@ using InvoiceMaker.Application.Commands.EditSeller;
 using InvoiceMaker.Application.Dto;
 using InvoiceMaker.Application.Queries.GetAll;
 using InvoiceMaker.Application.Queries.GetBy;
+using InvoiceMaker.Application.Queries.GetInvoiceNumber;
 using InvoiceMaker.MVC.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -31,11 +32,18 @@ namespace InvoiceMaker.MVC.Controllers
             _mapper = mapper;
         }
 
-        public IActionResult CreateFullInvoice()
+        public async Task<IActionResult> CreateFullInvoice()
         {
+            var newInvoiceNumber = await _mediator.Send(new GetNewInvoiceNumberQuery());
+            var sellers = await _mediator.Send(new GetAllSellersQuery());
+            var buyers = await _mediator.Send(new GetAllBuyersQuery());
 
             var command = new CreateFullInvoiceCommand
             {
+                InvoiceDto = new InvoiceDto
+                {
+                    Number = newInvoiceNumber.ToString()
+                },
                 ItemsDto = new List<ItemDto> { new ItemDto() },
                 PaymentOptionsList = new List<SelectListItem>
                 {
@@ -50,7 +58,9 @@ namespace InvoiceMaker.MVC.Controllers
                     new SelectListItem { Value = "2", Text = "7 dni" },
                     new SelectListItem { Value = "3", Text = "14 dni" },
                     new SelectListItem { Value = "3", Text = "30 dni" }
-                }
+                },
+                Sellers = sellers.ToList(),
+                Buyers = buyers.ToList()
             };
 
             return View(command);
@@ -254,6 +264,20 @@ namespace InvoiceMaker.MVC.Controllers
             var command = new CreateSellerCommand();
             return View(command);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateBuyer(CreateBuyerCommand model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            await _mediator.Send(model);
+
+            return RedirectToAction(nameof(BuyerIndex));
+        }
+
 
         public IActionResult CreateBuyer()
         {

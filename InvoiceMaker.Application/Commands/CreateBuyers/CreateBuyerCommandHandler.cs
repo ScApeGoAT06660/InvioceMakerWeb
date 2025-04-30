@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using InvoiceMaker.Application.Dto;
 using InvoiceMaker.Application.Queries;
+using InvoiceMaker.Application.User;
 using InvoiceMaker.Domain;
 using InvoiceMaker.Domain.Interfaces;
 using MediatR;
@@ -17,16 +18,19 @@ namespace InvoiceMaker.Application.Commands.CreateBuyers
     {
         private readonly IInvoiceMakerRepository _invoiceMakerRepository;
         private readonly IMapper _mapper;
+        private readonly IUserContext _userContext;
 
-        public CreateBuyerCommandHandler(IInvoiceMakerRepository invoiceMakerRepository, IMapper mapper)
+        public CreateBuyerCommandHandler(IInvoiceMakerRepository invoiceMakerRepository, IMapper mapper, IUserContext userContext)
         {
             _invoiceMakerRepository = invoiceMakerRepository;
             _mapper = mapper;
+            _userContext = userContext;
         }
 
         public async Task<BuyerDto> Handle(CreateBuyerCommand request, CancellationToken cancellationToken)
         {
             var buyer = _mapper.Map<Buyer>(request);
+            buyer.CreatedById = _userContext.GetCurrentUser().Id;
             await _invoiceMakerRepository.CreateBuyer(buyer);
 
             var result = _mapper.Map<BuyerDto>(buyer);

@@ -13,5 +13,6 @@ namespace InvoiceMaker.Domain
         public string? SWIFT { get; set; }
         public string? LogoPath { get; set; }
         public bool IsDeleted { get; set; }
+        public string CreatedById { get; set; }
     }
 }

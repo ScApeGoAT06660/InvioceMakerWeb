@@ -105,15 +105,15 @@ namespace InvoiceMaker.Infrastructure.Repositories
             return invoices;
         }
 
-        public async Task<IEnumerable<Seller>> GetAllSellers()
+        public async Task<IEnumerable<Seller>> GetAllSellers(string userId)
         {
-            var sellers = await _dbContext.Sellers.Where(x => x.IsDeleted == false).ToListAsync();
+            var sellers = await _dbContext.Sellers.Where(x => x.IsDeleted == false && x.CreatedById == userId).ToListAsync();
             return sellers;
         }
 
-        public async Task<IEnumerable<Buyer>> GetAllBuyers()
+        public async Task<IEnumerable<Buyer>> GetAllBuyers(string userId)
         {
-            var buyer = await _dbContext.Buyers.Where(x => x.isDeleted == false).ToListAsync();
+            var buyer = await _dbContext.Buyers.Where(x => x.isDeleted == false && x.CreatedById == userId).ToListAsync();
             return buyer;
         }
 
@@ -176,6 +176,47 @@ namespace InvoiceMaker.Infrastructure.Repositories
             }
 
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<string> ReturnNewInvoiceNumber(string userId)
+        {
+            string currentMonth = DateTime.Now.ToString("MM");
+            string currentYear = DateTime.Now.ToString("yyyy");
+            string currentMonthYear = $"{currentMonth}/{currentYear}";
+
+            var invoices = await _dbContext.Invoices
+                .Where(i => i.Number.EndsWith($"/{currentMonthYear}") && i.CreatedById == userId)
+                .ToListAsync();
+
+            var lastInvoice = invoices
+                .OrderByDescending(i =>
+                {
+                    string[] parts = i.Number.Split('/');
+                    return parts.Length >= 2 && int.TryParse(parts[0], out int num) ? num : -1;
+                })
+                .FirstOrDefault();
+
+            string newInvoiceNumber;
+
+            if (lastInvoice != null)
+            {
+                string[] parts = lastInvoice.Number.Split('/');
+
+                if (parts.Length >= 2 && int.TryParse(parts[0], out int lastNumber))
+                {
+                    newInvoiceNumber = $"{(lastNumber + 1):D2}/{currentMonthYear}";
+                }
+                else
+                {
+                    newInvoiceNumber = $"01/{currentMonthYear}";
+                }
+            }
+            else
+            {
+                newInvoiceNumber = $"01/{currentMonthYear}";
+            }
+
+            return newInvoiceNumber;
         }
     }
 }

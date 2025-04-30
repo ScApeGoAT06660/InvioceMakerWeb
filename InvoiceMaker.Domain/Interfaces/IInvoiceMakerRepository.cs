@@ -21,13 +21,14 @@ namespace InvoiceMaker.Domain.Interfaces
         Task<Invoice?> GetInvoiceByNumber(string value);
         Task<Invoice?> GetInvoiceById(int value);
         Task<IEnumerable<Invoice>> GetAllInvoices(string userId);
-        Task<IEnumerable<Seller>> GetAllSellers();
+        Task<IEnumerable<Seller>> GetAllSellers(string userId);
         Task<Seller?> GetSellerByID(int value);
-        Task<IEnumerable<Buyer>> GetAllBuyers();
+        Task<IEnumerable<Buyer>> GetAllBuyers(string userId);
         Task<Buyer?> GetBuyerByID(int value);
         Task DeleteSeller(int value);
         Task DeleteInvoice(int value);
         Task DeleteBuyer(int value);
         Task Commit();
+        Task<string> ReturnNewInvoiceNumber(string userId);
     }
 }
