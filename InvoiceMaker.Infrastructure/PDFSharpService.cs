@@ -10,70 +10,41 @@ using System.Xml.Linq;
 using PdfSharp.Pdf;
 using PdfSharp.Drawing;
 using InvoiceMaker.Domain;
+using InvoiceMaker.Application.Services;
 
 
 namespace InvoiceMaker.Infrastructure
 {
-    internal class PDFSharpController
+    public class PDFSharpService : IPDFSharpService
     {
         Invoice _invoice;
         Seller _seller;
         Buyer _buyer;
 
-        public PDFSharpController(Invoice invoice, Seller seller, Buyer buyer)
+        public byte[] GenerateInvoicePdf(Invoice invoice, Seller seller, Buyer buyer)
         {
             _invoice = invoice;
             _seller = seller;
             _buyer = buyer;
-        }
 
-        public PDFSharpController(Invoice invoice)
-        {
-            _invoice = invoice;
-        }
-
-        public void GenerateInvoicePdf()
-        {
             PdfDocument document = new PdfDocument();
             document.Info.Title = $"Faktura {_invoice.Number}";
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
-
             XFont font = new XFont("Verdana", 10);
 
             int y = 40;
-
             y = DrawHeader(gfx, font, y);
             y = DrawSellerAndBuyer(gfx, font, y);
             y = DrawItemsTable(gfx, font, y);
             y = DrawSummary(gfx, font, y);
             y = DrawFooter(gfx, font, y);
 
-
-            string safeInvoiceNumber = _invoice.Number.Replace("/", "-");
-            string fileName = $"Faktura_{safeInvoiceNumber}.pdf";
-            //string filePath = Path.Combine(GlobalState.InvoicesFolderPath, fileName);
-
-            //document.Save(filePath);
-            //Process.Start(new ProcessStartInfo(GlobalState.InvoicesFolderPath) { UseShellExecute = true });
-        }
-
-        public void DeleteInvoice()
-        {
-            string safeInvoiceNumber = _invoice.Number.Replace("/", "-");
-            string fileName = $"Faktura_{safeInvoiceNumber}.pdf";
-            //string filePath = Path.Combine(GlobalState.InvoicesFolderPath, fileName);
-
-            //if (File.Exists(filePath))
-            //{
-            //    File.Delete(filePath);
-            //}
-        }
-
-        public void EditInvoice()
-        {
-            DeleteInvoice();
-            GenerateInvoicePdf();
+            using (MemoryStream stream = new MemoryStream())
+            {
+                document.Save(stream, false);
+                return stream.ToArray();
+            }
         }
 
         private int DrawHeader(XGraphics gfx, XFont font, int y)
@@ -111,7 +82,7 @@ namespace InvoiceMaker.Infrastructure
                 }
                 catch (Exception ex)
                 {
-                   // MessageBox.Show("Błąd podczas rysowania logo: " + ex.Message);
+                    // MessageBox.Show("Błąd podczas rysowania logo: " + ex.Message);
                 }
             }
             return y;

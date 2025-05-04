@@ -54,54 +54,58 @@
             <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#BuyersModal">
                 <i class="bi bi-file-person"></i> Lista kontrahentów
             </button>
+            <button type="button" class="btn btn-dark" onclick="getBuyerFromMRiF()">
+                <i class="bi bi-briefcase-fill"></i> MRIF
+            </button>
 
         </div>
     </div>
 
     <hr />
     <h5>Pozycje</h5>
-    <table class="table table-bordered text-center align-middle">
+    <table class="table invoice-table">
         <thead class="table-light">
             <tr>
-                <th>Lp</th>
-                <th>Nazwa</th>
-                <th>Jm</th>
-                <th>Ilość</th>
-                <th>Netto</th>
-                <th>VAT (%)</th>
-                <th>Brutto</th>
+                <th class="col-lp">Lp</th>
+                <th class="col-name">Nazwa</th>
+                <th class="col-unit">Jm</th>
+                <th class="col-qty">Ilość</th>
+                <th class="col-netto">Netto</th>
+                <th class="col-vat">VAT (%)</th>
+                <th class="col-brutto">Brutto</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             @for (int i = 0; i < Model.ItemsDto.Count; i++)
             {
                 <tr>
-                    <td>@(i + 1)</td>
-                    <td><input asp-for="ItemsDto[@i].Name" class="form-control" /></td>
-                    <td><input asp-for="ItemsDto[@i].Unit" class="form-control" /></td>
-                    <td><input asp-for="ItemsDto[@i].Quantity" class="form-control" type="number" /></td>
-                    <td><input asp-for="ItemsDto[@i].Netto" class="form-control" /></td>
-                    <td><input asp-for="ItemsDto[@i].VAT" class="form-control" /></td>
-                    <td><input asp-for="ItemsDto[@i].Brutto" class="form-control" /></td>
+                    <td class="col-lp">@(i + 1)</td>
+                    <td class="col-name"><input asp-for="ItemsDto[@i].Name" class="form-control" /></td>
+                    <td class="col-unit"><input asp-for="ItemsDto[@i].Unit" class="form-control" /></td>
+                    <td class="col-qty"><input asp-for="ItemsDto[@i].Quantity" class="form-control" type="number" /></td>
+                    <td class="col-netto"><input asp-for="ItemsDto[@i].Netto" class="form-control" /></td>
+                    <td class="col-vat"><input asp-for="ItemsDto[@i].VAT" class="form-control" /></td>
+                    <td class="col-brutto"><input asp-for="ItemsDto[@i].Brutto" class="form-control" /></td>
+                    <td><button type="button" class="btn-delete" onclick="deleteRow(this)">Usuń</button></td>
                 </tr>
             }
         </tbody>
     </table>
-    <button type="button" class="btn btn-link" onclick="addItem()">+ Dodaj pozycję</button>
+
+    <button type="button" class="btn btn-link" id="addNewItem">+ Dodaj pozycję</button>
 
     <hr />
     <div class="row mb-3">
         <div class="col-md-4">
-            <label asp-for="SelectedPaymentDeadline">Termin płatności</label>
-            <select asp-for="SelectedPaymentDeadline" asp-items="Model.DeadlineOptionsList" class="form-select">
-                <option value="">Wybierz</option>
-            </select>
+            <label asp-for="SelectedPaymentOption">Forma płatności</label>
+            <select asp-for="SelectedPaymentOption" asp-items="Model.PaymentOptionsList" class="form-select"
+                    asp-option-label="Wybierz"></select>
         </div>
         <div class="col-md-4">
-            <label asp-for="SelectedPaymentOption">Forma płatności</label>
-            <select asp-for="SelectedPaymentOption" asp-items="Model.PaymentOptionsList" class="form-select">
-                <option value="">Wybierz</option>
-            </select>
+            <label asp-for="SelectedPaymentDeadline">Termin płatności</label>
+            <select asp-for="SelectedPaymentDeadline" asp-items="Model.DeadlineOptionsList" class="form-select"
+                    asp-option-label="Wybierz"></select>
         </div>
     </div>
 
@@ -127,7 +131,7 @@
 </form>
 
 
-<!-- SekModal -->
+<!-- SellerModal -->
 <div class="modal fade" id="SellersModal" tabindex="-1" role="dialog" aria-labelledby="SellersModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -166,7 +170,7 @@
     </div>
 </div>
 
-<!-- Modal -->
+<!-- BuyerModal -->
 <div class="modal fade" id="BuyersModal" tabindex="-1" role="dialog" aria-labelledby="BuyersModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -234,4 +238,79 @@
         });
     </script>
 
+    <script>
+        let btnAdd = document.getElementById("addNewItem");
+        let itemTableBody = document.querySelector("table tbody");
+        let itemIndex = @Model.ItemsDto.Count;
+
+        btnAdd.addEventListener('click', () => {
+            let template = `
+                <tr>
+                    <td>${itemIndex + 1}</td>
+                    <td><input name="ItemsDto[${itemIndex}].Name" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Unit" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Quantity" class="form-control" type="number" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Netto" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].VAT" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Brutto" class="form-control" /></td>
+                    <td><button type="button" class="btn-delete" onclick="deleteRow(this)">Usuń</button></td>
+                </tr>
+            `;
+            itemTableBody.insertAdjacentHTML('beforeend', template);
+            itemIndex++;
+        });
+    </script>
+
+    <script>
+        function refreshInputs() {
+            const rows = document.querySelectorAll("tbody tr");
+            rows.forEach((row, index) => {
+                row.querySelector("td").textContent = index + 1; // aktualizuj Lp
+                row.querySelectorAll("input").forEach(input => {
+                    const propMatch = input.name.match(/\.(\w+)$/);
+                    if (propMatch) {
+                        input.name = `ItemsDto[${index}].${propMatch[1]}`;
+                    }
+                });
+            });
+            itemIndex = rows.length;
+        }
+
+            function deleteRow(button) {
+                const row = button.closest("tr");
+                row.remove();
+                refreshInputs();
+            }
+    </script>
+
+    <script>
+        async function getBuyerFromMRiF() {
+            const nip = $("#BuyerDto_VATID").val();
+
+            if (!nip) {
+                alert("Podaj NIP.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Invoice/GetBuyerByVatNumber?nip=${nip}`);
+                if (!response.ok) {
+                    alert("Nie znaleziono kontrahenta.");
+                    return;
+                }
+
+                const buyer = await response.json();
+
+                $("#BuyerDto_Name").val(buyer.name);
+                $("#BuyerDto_StreetAndNo").val(buyer.streetAndNo);
+                $("#BuyerDto_City").val(buyer.city);
+                $("#BuyerDto_Postcode").val(buyer.postcode);
+                $("#BuyerDto_VATID").val(buyer.vatid);
+
+            } catch (err) {
+                console.error(err);
+                alert("Błąd połączenia z API MF.");
+            }
+        }
+    </script>
 }

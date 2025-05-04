@@ -46,17 +46,23 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="SelectedPaymentDeadline" class="form-label"></label>
-                <select asp-for="SelectedPaymentDeadline" asp-items="Model.DeadlineOptionsList" class="form-select">
-                    <option value="">Wybierz opcję</option>
+                <label asp-for="SelectedPaymentOption" class="form-label"></label>
+                <select asp-for="SelectedPaymentOption"
+                        asp-items="Model.PaymentOptionsList"
+                        class="form-select"
+                        asp-option-label="Wybierz opcję">
                 </select>
+                <span asp-validation-for="SelectedPaymentOption" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="SelectedPaymentOption" class="form-label"></label>
-                <select asp-for="SelectedPaymentOption" asp-items="Model.PaymentOptionsList" class="form-select">
-                    <option value="">Wybierz opcję</option>
+                <label asp-for="SelectedPaymentDeadline" class="form-label"></label>
+                <select asp-for="SelectedPaymentDeadline"
+                        asp-items="Model.DeadlineOptionsList"
+                        class="form-select"
+                        asp-option-label="Wybierz opcję">
                 </select>
+                <span asp-validation-for="SelectedPaymentDeadline" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -107,14 +113,12 @@
                 <label asp-for="Items[0].Brutto" class="control-label">Brutto</label>
                 <input asp-for="Items[0].Brutto" type="text" class="form-control" />
             </div>
+			    <button type="submit" class="btn btn-primary">Zapisz</button>
+			    <a asp-action="InvoiceIndex">Wróć do listy</a>
         </form>
     </div>
 </div>
 
-<div>
-	<button type="submit" class="btn btn-primary">Zapisz</button>
-    <a asp-action="InvoiceIndex">Wróć do listy</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -32,6 +32,7 @@
                     <form asp-action="DeleteInvoice" asp-route-id = "@invoice.Id" method="post" style="display:inline;">
                         <button type="submit" class="btn-delete">Usuń</button>
                     </form>
+                    <a asp-controller="Invoice" asp-action="DownloadPDF" asp-route-id="@invoice.Id" class="btn-info">Generuj PDF</a>
                 </div>
             </div>
         </div>

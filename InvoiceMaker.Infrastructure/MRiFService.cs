@@ -6,13 +6,15 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using InvoiceMaker.Domain;
+using InvoiceMaker.Application.Dto;
+using InvoiceMaker.Application.Services;
 
 
 namespace InvoiceMaker.Infrastructure
 {
-    internal class MRiFController
+    public class MRiFService : IMRiFService
     {
-        public async Task<Buyer> TakeTraderInfo(string nip)
+        public async Task<BuyerDto> TakeTraderInfo(string nip)
         {
             string date = DateTime.Now.ToString("yyyy-MM-dd");
             string url = $"https://wl-api.mf.gov.pl/api/search/nip/{nip}?date={date}";
@@ -24,13 +26,15 @@ namespace InvoiceMaker.Infrastructure
                 {
                     string jsonResult = await response.Content.ReadAsStringAsync();
                     JObject jsonObject = JObject.Parse(jsonResult);
-                    var subject = jsonObject["result"]?["subject"];
+
+                    var result = jsonObject["result"] as JObject;
+                    var subject = result?["subject"] as JObject;
 
                     if (subject != null)
                     {
                         string? fullAddress = subject["workingAddress"]?.ToString();
 
-                        return new Buyer
+                        return new BuyerDto
                         {
                             Name = subject["name"]?.ToString(),
                             VATID = subject["nip"]?.ToString(),
@@ -41,8 +45,10 @@ namespace InvoiceMaker.Infrastructure
                     }
                 }
             }
+
             return null;
         }
+
 
         private static string ExtractStreetAndNumber(string address)
         {

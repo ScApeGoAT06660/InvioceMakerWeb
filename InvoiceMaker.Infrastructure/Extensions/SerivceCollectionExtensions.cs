@@ -1,7 +1,9 @@
-﻿using InvoiceMaker.Domain.Interfaces;
+﻿using InvoiceMaker.Application.Services;
+using InvoiceMaker.Domain.Interfaces;
 using InvoiceMaker.Infrastructure.Persistence;
 using InvoiceMaker.Infrastructure.Repositories;
 using InvoiceMaker.Infrastructure.Seeders;
+using InvoiceMaker.MVC.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +28,9 @@ namespace InvoiceMaker.Infrastructure.Extensions
 
             services.AddScoped<InvoiceMakerSeeder>();
             services.AddScoped<IInvoiceMakerRepository, InvoiceMakerRepository>();
+            services.AddScoped<IMRiFService, MRiFService>();
+            services.AddScoped<IPDFSharpService, PDFSharpService>();
+            services.AddScoped<IDropdownOptionsProvider, DropdownOptionsProvider>();
         }
     }
 }

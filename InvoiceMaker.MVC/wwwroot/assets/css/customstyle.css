@@ -69,3 +69,65 @@
         text-decoration: none;
         color: white;
     }
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .invoice-table th,
+    .invoice-table td {
+        text-align: center;
+        vertical-align: middle;
+        padding: 8px;
+        border: 1px solid #dee2e6;
+    }
+
+    .invoice-table .col-lp {
+        width: 50px;
+    }
+
+    .invoice-table .col-name {
+        width: 500px;
+    }
+
+    .invoice-table .col-unit {
+        width: 80px;
+    }
+
+    .invoice-table .col-qty {
+        width: 80px;
+    }
+
+    .invoice-table .col-netto {
+        width: 120px;
+    }
+
+    .invoice-table .col-vat {
+        width: 80px;
+    }
+
+    .invoice-table .col-brutto {
+        width: 120px;
+    }
+
+.select-match-input {
+    height: calc(2.25rem + 2px); 
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+    .select-match-input:focus {
+        color: #212529;
+        background-color: #fff;
+        border-color: #86b7fe;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+    }

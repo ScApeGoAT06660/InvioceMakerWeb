@@ -13,9 +13,9 @@ namespace InvoiceMaker.Application.Dto
         [Display(Name = "Numer")]
         public string? Number { get; set; } = default!;
         [Display(Name = "Data wystawienia")]
-        public DateTime IssueDate { get; set; }
+        public DateTime IssueDate { get; set; } = DateTime.Today;
         [Display(Name = "Data sprzedaży")]
-        public DateTime SaleDate { get; set; }
+        public DateTime SaleDate { get; set; } = DateTime.Today;
         [Display(Name = "Miejsce")]
         public string? Place { get; set; }
         public int SellerId { get; set; }

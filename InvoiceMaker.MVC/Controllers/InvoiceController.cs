@@ -8,11 +8,14 @@ using InvoiceMaker.Application.Commands.DeleteSeller;
 using InvoiceMaker.Application.Commands.EditBuyer;
 using InvoiceMaker.Application.Commands.EditInvoice;
 using InvoiceMaker.Application.Commands.EditSeller;
+using InvoiceMaker.Application.Commands.GeneratePDFInvoice;
 using InvoiceMaker.Application.Dto;
 using InvoiceMaker.Application.Queries.GetAll;
 using InvoiceMaker.Application.Queries.GetBy;
 using InvoiceMaker.Application.Queries.GetInvoiceNumber;
+using InvoiceMaker.Infrastructure;
 using InvoiceMaker.MVC.Extensions;
+using InvoiceMaker.MVC.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,11 +28,13 @@ namespace InvoiceMaker.MVC.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly IDropdownOptionsProvider _dropdownOptionsProvider;
 
-        public InvoiceController(IMediator mediator, IMapper mapper)
+        public InvoiceController(IMediator mediator, IMapper mapper, IDropdownOptionsProvider dropdownOptionsProvider)
         {
             _mediator = mediator;
             _mapper = mapper;
+            _dropdownOptionsProvider = dropdownOptionsProvider;
         }
 
         public async Task<IActionResult> CreateFullInvoice()
@@ -45,20 +50,8 @@ namespace InvoiceMaker.MVC.Controllers
                     Number = newInvoiceNumber.ToString()
                 },
                 ItemsDto = new List<ItemDto> { new ItemDto() },
-                PaymentOptionsList = new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "1", Text = "gotówka" },
-                    new SelectListItem { Value = "2", Text = "karta kredytowa" },
-                    new SelectListItem { Value = "3", Text = "przelew" }
-                },
-
-                DeadlineOptionsList = new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "1", Text = "3 dni" },
-                    new SelectListItem { Value = "2", Text = "7 dni" },
-                    new SelectListItem { Value = "3", Text = "14 dni" },
-                    new SelectListItem { Value = "3", Text = "30 dni" }
-                },
+                PaymentOptionsList = _dropdownOptionsProvider.GetPaymentMethods(),
+                DeadlineOptionsList = _dropdownOptionsProvider.GetPaymentDeadlines(),
                 Sellers = sellers.ToList(),
                 Buyers = buyers.ToList()
             };
@@ -74,20 +67,9 @@ namespace InvoiceMaker.MVC.Controllers
 
             if (!ModelState.IsValid)
             {
-                model.PaymentOptionsList = new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "gotówka", Text = "gotówka" },
-                    new SelectListItem { Value = "karta kredytowa", Text = "karta kredytowa" },
-                    new SelectListItem { Value = "przelew", Text = "przelew" }
-                };
+                model.PaymentOptionsList = _dropdownOptionsProvider.GetPaymentMethods();
 
-                model.DeadlineOptionsList = new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "3 dni", Text = "3 dni" },
-                    new SelectListItem { Value = "7 dni", Text = "7 dni" },
-                    new SelectListItem { Value = "14 dni", Text = "14 dni" },
-                    new SelectListItem { Value = "30 dni", Text = "30 dni" }
-                };
+                model.DeadlineOptionsList = _dropdownOptionsProvider.GetPaymentDeadlines();
 
                 if (model.ItemsDto == null || model.ItemsDto.Count == 0)
                 {
@@ -124,13 +106,11 @@ namespace InvoiceMaker.MVC.Controllers
             if (!ModelState.IsValid)
             {
                 model.PaymentOptionsList = new SelectList(
-                new List<string> { "gotówka", "karta kredytowa", "przelew" },
-                selectedValue: model.SelectedPaymentOption
+                    _dropdownOptionsProvider.GetPaymentMethods(), "Value", "Text", model.SelectedPaymentOption
                 );
 
                 model.DeadlineOptionsList = new SelectList(
-                    new List<string> { "3 dni", "7 dni", "14 dni", "30 dni" },
-                    selectedValue: model.SelectedPaymentDeadline
+                    _dropdownOptionsProvider.GetPaymentDeadlines(), "Value", "Text", model.SelectedPaymentDeadline
                 );
 
                 if (model.Items == null || !model.Items.Any())
@@ -171,20 +151,9 @@ namespace InvoiceMaker.MVC.Controllers
             edit.SelectedPaymentOption = edit.PaymentType;
             edit.SelectedPaymentDeadline = edit.PaymentDeadline;
 
-            edit.PaymentOptionsList = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "gotówka", Text = "gotówka" },
-                new SelectListItem { Value = "karta kredytowa", Text = "karta kredytowa" },
-                new SelectListItem { Value = "przelew", Text = "przelew" }
-            };
+            edit.PaymentOptionsList = _dropdownOptionsProvider.GetPaymentMethods();
 
-            edit.DeadlineOptionsList = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "3 dni", Text = "3 dni" },
-                new SelectListItem { Value = "7 dni", Text = "7 dni" },
-                new SelectListItem { Value = "14 dni", Text = "14 dni" },
-                new SelectListItem { Value = "30 dni", Text = "30 dni" }
-            };
+            edit.DeadlineOptionsList = _dropdownOptionsProvider.GetPaymentDeadlines();
 
             if (edit.Items == null || !edit.Items.Any())
             {
@@ -330,6 +299,23 @@ namespace InvoiceMaker.MVC.Controllers
             return View(buyer);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetBuyerByVatNumber(string nip)
+        {
+            var buyer = await _mediator.Send(new GetBuyerByNipQuery(nip));
 
+            if (buyer == null)
+                return NotFound("Nie znaleziono kontrahenta");
+
+            return Json(buyer);
+        }
+
+        [HttpGet("Invoice/Download/{id}")]
+        public async Task<IActionResult> DownloadPDF(int id)
+        {
+            var pdfBytes = await _mediator.Send(new GeneratePdfInvoiceCommand(id));
+            var fileName = $"Faktura_{id}.pdf";
+            return File(pdfBytes, "application/pdf", fileName);
+        }
     }
 }
