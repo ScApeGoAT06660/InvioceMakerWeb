@@ -30,9 +30,9 @@ namespace InvoiceMaker.Application.Commands.CreateFullInvoice
 
         public async Task<Unit> Handle(CreateFullInvoiceCommand request, CancellationToken cancellationToken)
         {
-            var checkSeller =  await _invoiceMakerRepository.GetSellerByVATID(request.SellerDto.VATID);
+            var checkSeller = await _invoiceMakerRepository.GetSellerByVATID(request.SellerDto.VATID);
 
-            if (checkSeller.VATID == null)
+            if (checkSeller == null)
             {
                 var sellerCommand = _mapper.Map<CreateSellerCommand>(request.SellerDto);
                 await _mediator.Send(sellerCommand);
@@ -47,7 +47,7 @@ namespace InvoiceMaker.Application.Commands.CreateFullInvoice
 
             var checkBuyer = await _invoiceMakerRepository.GetBuyerByVATID(request.BuyerDto.VATID);
 
-            if(checkBuyer.VATID == null)
+            if (checkBuyer == null) 
             {
                 var buyerCommand = _mapper.Map<CreateBuyerCommand>(request.BuyerDto);
                 await _mediator.Send(buyerCommand);
@@ -59,6 +59,7 @@ namespace InvoiceMaker.Application.Commands.CreateFullInvoice
             {
                 request.InvoiceDto.BuyerId = checkBuyer.Id;
             }
+
 
             var invoiceId = _mapper.Map<CreateInvoiceCommand>(request.InvoiceDto);
             await _mediator.Send(invoiceId);

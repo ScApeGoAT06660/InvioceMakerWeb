@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace InvoiceMaker.Application.Commands.EditFullInvoice
 {
-    internal class EditFullInvoiceCommandHandler : IRequestHandler<EditFullInvoiceCommand>
+    public class EditFullInvoiceCommandHandler : IRequestHandler<EditFullInvoiceCommand>
     {
         private readonly IInvoiceMakerRepository _invoiceMakerRepository;
         private readonly IMediator _mediator;

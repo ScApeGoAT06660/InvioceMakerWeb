@@ -30,5 +30,6 @@ namespace InvoiceMaker.Domain.Interfaces
         Task DeleteBuyer(int value);
         Task Commit();
         Task<string> ReturnNewInvoiceNumber(string userId);
+        Task<List<Item>> GetItemsByInvoiceId(int value);
     }
 }

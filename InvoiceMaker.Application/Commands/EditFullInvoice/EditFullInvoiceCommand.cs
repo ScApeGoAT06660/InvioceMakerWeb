@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace InvoiceMaker.Application.Commands.EditFullInvoice
 {
-    internal class EditFullInvoiceCommand : IRequest
+    public class EditFullInvoiceCommand : IRequest
     {
         public SellerDto SellerDto { get; set; }
         public BuyerDto BuyerDto { get; set; }

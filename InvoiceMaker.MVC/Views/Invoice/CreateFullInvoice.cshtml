@@ -265,7 +265,7 @@
         function refreshInputs() {
             const rows = document.querySelectorAll("tbody tr");
             rows.forEach((row, index) => {
-                row.querySelector("td").textContent = index + 1; // aktualizuj Lp
+                row.querySelector("td").textContent = index + 1;
                 row.querySelectorAll("input").forEach(input => {
                     const propMatch = input.name.match(/\.(\w+)$/);
                     if (propMatch) {

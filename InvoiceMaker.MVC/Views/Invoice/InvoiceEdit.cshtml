@@ -1,125 +1,166 @@
-﻿@using InvoiceMaker.Application.Commands.EditInvoice
-
-@model EditInvoiceCommand
+﻿@model InvoiceMaker.Application.Commands.EditFullInvoice.EditFullInvoiceCommand
 
 @{
-
-    ViewData["Title"] = @Model.Number + " - edycja";
+    ViewData["Title"] = "Edytuj fakturę";
 }
 
-<h1>@Model.Number - edycja</h1>
+<h2 class="text-center mt-4 mb-5">Edytuj fakturę VAT</h2>
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="InvoiceEdit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Number" class="control-label"></label>
-                <input asp-for="Number" class="form-control" />
-                <span asp-validation-for="Number" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IssueDate" class="control-label"></label>
-                <input asp-for="IssueDate" class="form-control" />
-                <span asp-validation-for="IssueDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SaleDate" class="control-label"></label>
-                <input asp-for="SaleDate" class="form-control" />
-                <span asp-validation-for="SaleDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Place" class="control-label"></label>
-                <input asp-for="Place" class="form-control" />
-                <span asp-validation-for="Place" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SellerId" class="control-label"></label>
-                <input asp-for="SellerId" class="form-control" />
-                <span asp-validation-for="SellerId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BuyerId" class="control-label"></label>
-                <input asp-for="BuyerId" class="form-control" />
-                <span asp-validation-for="BuyerId" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="SelectedPaymentOption" class="form-label"></label>
-                <select asp-for="SelectedPaymentOption"
-                        asp-items="Model.PaymentOptionsList"
-                        class="select-match-input"
-                        asp-option-label="Wybierz opcję">
-                </select>
-                <span asp-validation-for="SelectedPaymentOption" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="SelectedPaymentDeadline" class="form-label"></label>
-                <select asp-for="SelectedPaymentDeadline"
-                        asp-items="Model.DeadlineOptionsList"
-                        class="select-match-input"
-                        asp-option-label="Wybierz opcję">
-                </select>
-                <span asp-validation-for="SelectedPaymentDeadline" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="SellerSignature" class="control-label"></label>
-                <input asp-for="SellerSignature" class="form-control" />
-                <span asp-validation-for="SellerSignature" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BuyerSignature" class="control-label"></label>
-                <input asp-for="BuyerSignature" class="form-control" />
-                <span asp-validation-for="BuyerSignature" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Notes" class="control-label"></label>
-                <input asp-for="Notes" class="form-control" />
-                <span asp-validation-for="Notes" class="text-danger"></span>
-            </div>
-
-            <h4>Pozycje faktury</h4>
-
-            <div class="form-group">
-                <label asp-for="Items[0].Name" class="control-label">Nazwa</label>
-                <input asp-for="Items[0].Name" class="form-control" />
-                <span asp-validation-for="Items[0].Name" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Items[0].Quantity" class="control-label">Ilość</label>
-                <input asp-for="Items[0].Quantity" class="form-control" />
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Items[0].Unit" class="control-label">Jednostka</label>
-                <input asp-for="Items[0].Unit" class="form-control" />
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Items[0].Netto"  class="control-label">Netto</label>
-                <input asp-for="Items[0].Netto" type="text" class="form-control" />
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Items[0].VAT" class="control-label">VAT</label>
-                <input asp-for="Items[0].VAT" type="text" class="form-control" />
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Items[0].Brutto" class="control-label">Brutto</label>
-                <input asp-for="Items[0].Brutto" type="text" class="form-control" />
-            </div>
-			    <button type="submit" class="btn btn-primary">Zapisz</button>
-			    <a asp-action="InvoiceIndex">Wróć do listy</a>
-        </form>
+<form asp-action="InvoiceEdit" method="post" enctype="multipart/form-data">
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <label asp-for="InvoiceDto.Number" class="form-label">Numer faktury</label>
+            <input asp-for="InvoiceDto.Number" readonly class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="InvoiceDto.IssueDate" class="form-label">Data wystawienia</label>
+            <input asp-for="InvoiceDto.IssueDate" type="date" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="InvoiceDto.Place" class="form-label">Miejsce wystawienia</label>
+            <input asp-for="InvoiceDto.Place" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="InvoiceDto.SaleDate" class="form-label">Data sprzedaży</label>
+            <input asp-for="InvoiceDto.SaleDate" type="date" class="form-control" />
+        </div>
     </div>
-</div>
 
+    <hr />
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h5>Sprzedawca</h5>
+            <input asp-for="SellerDto.Name" class="form-control mb-2" placeholder="Nazwa firmy" />
+            <input asp-for="SellerDto.VATID" class="form-control mb-2" placeholder="NIP" />
+            <input asp-for="SellerDto.StreetAndNo" class="form-control mb-2" placeholder="Ulica i numer" />
+            <input asp-for="SellerDto.Postcode" class="form-control mb-2" placeholder="Kod pocztowy" />
+            <input asp-for="SellerDto.City" class="form-control mb-2" placeholder="Miasto" />
+            <input asp-for="SellerDto.BankAccount" class="form-control mb-2" placeholder="Numer konta" />
+            <input asp-for="SellerDto.SWIFT" class="form-control mb-2" placeholder="SWIFT" />
+            <input asp-for="SellerDto.Bank" class="form-control mb-2" placeholder="Bank" />
+        </div>
+        <div class="col-md-6">
+            <h5>Kupujący</h5>
+            <input asp-for="BuyerDto.Name" class="form-control mb-2" placeholder="Nazwa firmy" />
+            <input asp-for="BuyerDto.VATID" class="form-control mb-2" placeholder="NIP" />
+            <input asp-for="BuyerDto.StreetAndNo" class="form-control mb-2" placeholder="Ulica i numer" />
+            <input asp-for="BuyerDto.Postcode" class="form-control mb-2" placeholder="Kod pocztowy" />
+            <input asp-for="BuyerDto.City" class="form-control mb-2" placeholder="Miasto" />
+        </div>
+    </div>
+
+    <hr />
+    <h5>Pozycje</h5>
+    <table class="table invoice-table">
+        <thead class="table-light">
+            <tr>
+                <th>Lp</th>
+                <th>Nazwa</th>
+                <th>Jm</th>
+                <th>Ilość</th>
+                <th>Netto</th>
+                <th>VAT (%)</th>
+                <th>Brutto</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.ItemsDto.Count; i++)
+            {
+                <tr>
+                    <td>@(i + 1)</td>
+                    <td><input asp-for="ItemsDto[@i].Name" class="form-control" /></td>
+                    <td><input asp-for="ItemsDto[@i].Unit" class="form-control" /></td>
+                    <td><input asp-for="ItemsDto[@i].Quantity" class="form-control" type="number" /></td>
+                    <td><input asp-for="ItemsDto[@i].Netto" class="form-control" /></td>
+                    <td><input asp-for="ItemsDto[@i].VAT" class="form-control" /></td>
+                    <td><input asp-for="ItemsDto[@i].Brutto" class="form-control" /></td>
+                    <td><button type="button" class="btn-delete" onclick="deleteRow(this)">Usuń</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-link" id="addNewItem">+ Dodaj pozycję</button>
+
+    <hr />
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label asp-for="SelectedPaymentOption">Forma płatności</label>
+            <select asp-for="SelectedPaymentOption" asp-items="Model.PaymentOptionsList" class="form-control"
+                    asp-option-label="Wybierz"></select>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="SelectedPaymentDeadline">Termin płatności</label>
+            <select asp-for="SelectedPaymentDeadline" asp-items="Model.DeadlineOptionsList" class="form-control"
+                    asp-option-label="Wybierz"></select>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <label asp-for="InvoiceDto.Notes">Uwagi do faktury:</label>
+            <textarea asp-for="InvoiceDto.Notes" class="form-control"></textarea>
+        </div>
+        <div class="col-md-3 text-center">
+            <label asp-for="InvoiceDto.SellerSignature">Podpis sprzedawcy</label>
+            <input asp-for="InvoiceDto.SellerSignature" class="form-control" />
+        </div>
+        <div class="col-md-3 text-center">
+            <label asp-for="InvoiceDto.BuyerSignature">Podpis kupującego</label>
+            <input asp-for="InvoiceDto.BuyerSignature" class="form-control" />
+        </div>
+    </div>
+
+    <hr />
+    <div class="text-end">
+        <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+    </div>
+</form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        let btnAdd = document.getElementById("addNewItem");
+        let itemTableBody = document.querySelector("table tbody");
+        let itemIndex = @Model.ItemsDto.Count;
+
+        btnAdd.addEventListener('click', () => {
+            let template = `
+                <tr>
+                    <td>${itemIndex + 1}</td>
+                    <td><input name="ItemsDto[${itemIndex}].Name" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Unit" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Quantity" class="form-control" type="number" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Netto" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].VAT" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Brutto" class="form-control" /></td>
+                    <td><button type="button" class="btn-delete" onclick="deleteRow(this)">Usuń</button></td>
+                </tr>
+            `;
+            itemTableBody.insertAdjacentHTML('beforeend', template);
+            itemIndex++;
+        });
+
+        function refreshInputs() {
+            const rows = document.querySelectorAll("tbody tr");
+            rows.forEach((row, index) => {
+                row.querySelector("td").textContent = index + 1;
+                row.querySelectorAll("input").forEach(input => {
+                    const match = input.name.match(/\.(\w+)$/);
+                    if (match) {
+                        input.name = `ItemsDto[${index}].${match[1]}`;
+                    }
+                });
+            });
+            itemIndex = rows.length;
+        }
+
+        function deleteRow(button) {
+            const row = button.closest("tr");
+            row.remove();
+            refreshInputs();
+        }
+    </script>
 }

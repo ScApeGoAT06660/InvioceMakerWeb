@@ -6,6 +6,7 @@ using InvoiceMaker.Application.Commands.DeleteBuyer;
 using InvoiceMaker.Application.Commands.DeleteInvoice;
 using InvoiceMaker.Application.Commands.DeleteSeller;
 using InvoiceMaker.Application.Commands.EditBuyer;
+using InvoiceMaker.Application.Commands.EditFullInvoice;
 using InvoiceMaker.Application.Commands.EditInvoice;
 using InvoiceMaker.Application.Commands.EditSeller;
 using InvoiceMaker.Application.Commands.GeneratePDFInvoice;
@@ -56,6 +57,13 @@ namespace InvoiceMaker.MVC.Controllers
                 Buyers = buyers.ToList()
             };
 
+            if (Request.Cookies.TryGetValue("LastSellerId", out var sellerIdStr)
+            && int.TryParse(sellerIdStr, out var sellerId))
+            {
+                var sellerDto = await _mediator.Send(new GetSellerByIdQuery(sellerId));
+                command.SellerDto = sellerDto;
+            }
+
             return View(command);
         }
 
@@ -82,45 +90,53 @@ namespace InvoiceMaker.MVC.Controllers
             model.InvoiceDto.PaymentType = model.SelectedPaymentOption;
             model.InvoiceDto.PaymentDeadline = model.SelectedPaymentDeadline;
 
-            this.SetNotification("success", $"Stoworzono fakture {model.InvoiceDto.Number}");
+            this.SetNotification("success", $"Stoworzono fakturę {model.InvoiceDto.Number}.");
 
-            await _mediator.Send(new CreateFullInvoiceCommand
+            await _mediator.Send(model);
+
+            if (model.InvoiceDto.SellerId > 0)
             {
-                SellerDto = model.SellerDto,
-                BuyerDto = model.BuyerDto,
-                InvoiceDto = model.InvoiceDto,
-                ItemsDto = model.ItemsDto
-            });
+                Response.Cookies.Append("LastSellerId", model.InvoiceDto.SellerId.ToString(), new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(30),
+                    IsEssential = true
+                });
+            }
 
             return RedirectToAction(nameof(InvoiceIndex));
         }
 
         [HttpPost]
         [Route("Invoice/Edit/{id}")]
-        public async Task<IActionResult> InvoiceEdit(int id, EditInvoiceCommand model)
+        public async Task<IActionResult> InvoiceEdit(int id, EditFullInvoiceCommand model)
         {
+            model.InvoiceDto.PaymentType = model.SelectedPaymentOption;
+            model.InvoiceDto.PaymentDeadline = model.SelectedPaymentDeadline;
 
-            model.PaymentType = model.SelectedPaymentOption;
-            model.PaymentDeadline = model.SelectedPaymentDeadline;
+            ModelState.Remove(nameof(model.PaymentOptionsList));
+            ModelState.Remove(nameof(model.DeadlineOptionsList));
+
+            model.InvoiceDto.Id = id;
 
             if (!ModelState.IsValid)
             {
                 model.PaymentOptionsList = new SelectList(
                     _dropdownOptionsProvider.GetPaymentMethods(), "Value", "Text", model.SelectedPaymentOption
-                );
+                ).ToList();
 
                 model.DeadlineOptionsList = new SelectList(
                     _dropdownOptionsProvider.GetPaymentDeadlines(), "Value", "Text", model.SelectedPaymentDeadline
-                );
+                ).ToList();
 
-                if (model.Items == null || !model.Items.Any())
+                if (model.ItemsDto == null || !model.ItemsDto.Any())
                 {
-                    model.Items = new List<ItemDto> { new ItemDto() };
+                    model.ItemsDto = new List<ItemDto> { new ItemDto() };
                 }
 
                 return View(model);
 
             }
+            this.SetNotification("success", $"Zedytowano fakturę {model.InvoiceDto.Number}.");
 
             await _mediator.Send(model);
 
@@ -141,23 +157,33 @@ namespace InvoiceMaker.MVC.Controllers
             var dto = await _mediator.Send(new GetBuyerByIdQuery(id));
             return View(dto);
         }
-
+  
         [Route("Invoice/Edit/{id}")]
         public async Task<IActionResult> InvoiceEdit(int id)
         {
-            var dto = await _mediator.Send(new GetInvoiceByNumberQuery(id));
-            EditInvoiceCommand edit = _mapper.Map<EditInvoiceCommand>(dto);
+            var invoiceDto = await _mediator.Send(new GetInvoiceByNumberQuery(id));
+            var sellerDto = await _mediator.Send(new GetSellerByIdQuery(invoiceDto.SellerId));
+            var buyerDto = await _mediator.Send(new GetBuyerByIdQuery(invoiceDto.BuyerId));
+            var itemsDto = await _mediator.Send(new GetItemsByInvoiceIdQuery(id));
 
-            edit.SelectedPaymentOption = edit.PaymentType;
-            edit.SelectedPaymentDeadline = edit.PaymentDeadline;
+            var edit = new EditFullInvoiceCommand
+            {
+                InvoiceDto = invoiceDto,
+                SellerDto = sellerDto,
+                BuyerDto = buyerDto,
+                ItemsDto = itemsDto
+            };
+
+            edit.SelectedPaymentOption = edit.InvoiceDto.PaymentType;
+            edit.SelectedPaymentDeadline = edit.InvoiceDto.PaymentDeadline;
 
             edit.PaymentOptionsList = _dropdownOptionsProvider.GetPaymentMethods();
 
             edit.DeadlineOptionsList = _dropdownOptionsProvider.GetPaymentDeadlines();
 
-            if (edit.Items == null || !edit.Items.Any())
+            if (edit.ItemsDto == null || !edit.ItemsDto.Any())
             {
-                edit.Items = new List<ItemDto> { new ItemDto() };
+                edit.ItemsDto = new List<ItemDto> { new ItemDto() };
             }
 
             return View(edit);
@@ -180,6 +206,8 @@ namespace InvoiceMaker.MVC.Controllers
             {
                 return View(model);
             }
+
+            this.SetNotification("success", $"Zedytowano sprzedawcę {model.Name}.");
 
             await _mediator.Send(model);
 
@@ -204,6 +232,8 @@ namespace InvoiceMaker.MVC.Controllers
                 return View(model);
             }
 
+            this.SetNotification("success", $"Zedytowano kontrahenta {model.Name}.");
+
             await _mediator.Send(model);
 
             return RedirectToAction(nameof(BuyerIndex));
@@ -223,6 +253,9 @@ namespace InvoiceMaker.MVC.Controllers
             {
                 return View(model);
             }
+
+            this.SetNotification("success", $"Utworzono sprzedawcę {model.Name}.");
+
             await _mediator.Send(model);
 
             return RedirectToAction(nameof(SellerIndex));
@@ -242,6 +275,8 @@ namespace InvoiceMaker.MVC.Controllers
                 return View(model);
             }
 
+            this.SetNotification("success", $"Utworzono kontrahenta {model.Name}.");
+
             await _mediator.Send(model);
 
             return RedirectToAction(nameof(BuyerIndex));
@@ -259,6 +294,7 @@ namespace InvoiceMaker.MVC.Controllers
         public async Task<IActionResult> DeleteSeller(int id)
         {
             var command = new DeleteSellerCommand { Id = id };
+            this.SetNotification("success", $"Usunięto sprzedawcę.");
             await _mediator.Send(command);
             return RedirectToAction(nameof(SellerIndex));
         }
@@ -268,6 +304,7 @@ namespace InvoiceMaker.MVC.Controllers
         public async Task<IActionResult> DeleteInvoice(int id)
         {
             var command = new DeleteInvoiceCommand { Id = id };
+            this.SetNotification("success", $"Usunięto fakturę.");
             await _mediator.Send(command);
             return RedirectToAction(nameof(InvoiceIndex));
         }
@@ -277,6 +314,7 @@ namespace InvoiceMaker.MVC.Controllers
         public async Task<IActionResult> DeleteBuyer(int id)
         {
             var command = new DeleteBuyerCommand { Id = id };
+            this.SetNotification("success", $"Usunięto kontrahenta.");
             await _mediator.Send(command);
             return RedirectToAction(nameof(BuyerIndex));
         }

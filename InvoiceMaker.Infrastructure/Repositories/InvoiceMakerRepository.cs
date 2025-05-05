@@ -218,5 +218,12 @@ namespace InvoiceMaker.Infrastructure.Repositories
 
             return newInvoiceNumber;
         }
+
+        public async Task<List<Item>> GetItemsByInvoiceId(int value)
+        {
+             return await _dbContext.Items
+                .Where(i => i.InvoiceId == value)
+                .ToListAsync();
+        }
     }
 }
