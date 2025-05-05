@@ -99,12 +99,12 @@
     <div class="row mb-3">
         <div class="col-md-4">
             <label asp-for="SelectedPaymentOption">Forma płatności</label>
-            <select asp-for="SelectedPaymentOption" asp-items="Model.PaymentOptionsList" class="form-select"
+            <select asp-for="SelectedPaymentOption" asp-items="Model.PaymentOptionsList" class="select-match-input"
                     asp-option-label="Wybierz"></select>
         </div>
         <div class="col-md-4">
             <label asp-for="SelectedPaymentDeadline">Termin płatności</label>
-            <select asp-for="SelectedPaymentDeadline" asp-items="Model.DeadlineOptionsList" class="form-select"
+            <select asp-for="SelectedPaymentDeadline" asp-items="Model.DeadlineOptionsList" class="select-match-input"
                     asp-option-label="Wybierz"></select>
         </div>
     </div>

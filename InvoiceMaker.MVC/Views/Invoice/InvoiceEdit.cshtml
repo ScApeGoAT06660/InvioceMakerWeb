@@ -49,7 +49,7 @@
                 <label asp-for="SelectedPaymentOption" class="form-label"></label>
                 <select asp-for="SelectedPaymentOption"
                         asp-items="Model.PaymentOptionsList"
-                        class="form-select"
+                        class="select-match-input"
                         asp-option-label="Wybierz opcję">
                 </select>
                 <span asp-validation-for="SelectedPaymentOption" class="text-danger"></span>
@@ -59,7 +59,7 @@
                 <label asp-for="SelectedPaymentDeadline" class="form-label"></label>
                 <select asp-for="SelectedPaymentDeadline"
                         asp-items="Model.DeadlineOptionsList"
-                        class="form-select"
+                        class="select-match-input"
                         asp-option-label="Wybierz opcję">
                 </select>
                 <span asp-validation-for="SelectedPaymentDeadline" class="text-danger"></span>

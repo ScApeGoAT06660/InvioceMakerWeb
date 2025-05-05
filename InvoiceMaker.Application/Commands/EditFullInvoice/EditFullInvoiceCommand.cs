@@ -1,16 +1,17 @@
-﻿using InvoiceMaker.Application.Dto;
-using MediatR;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using InvoiceMaker.Application.Dto;
+using MediatR;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace InvoiceMaker.Application.Commands.Create
+namespace InvoiceMaker.Application.Commands.EditFullInvoice
 {
-    public class CreateFullInvoiceCommand : IRequest
+    internal class EditFullInvoiceCommand : IRequest
     {
         public SellerDto SellerDto { get; set; }
         public BuyerDto BuyerDto { get; set; }

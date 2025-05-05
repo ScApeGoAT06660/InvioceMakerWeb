@@ -19,69 +19,57 @@ namespace InvoiceMaker.Application.Commands.CreateFullInvoice
     {
         private readonly IInvoiceMakerRepository _invoiceMakerRepository;
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public CreateFullInvoiceCommandHandler(IMediator mediator, IInvoiceMakerRepository invoiceMakerRepository)
+        public CreateFullInvoiceCommandHandler(IMediator mediator, IInvoiceMakerRepository invoiceMakerRepository, IMapper mapper)
         {
             _invoiceMakerRepository = invoiceMakerRepository;
             _mediator = mediator;
+            _mapper = mapper;
         }
 
         public async Task<Unit> Handle(CreateFullInvoiceCommand request, CancellationToken cancellationToken)
         {
-            var seller = await _mediator.Send(new CreateSellerCommand
+            var checkSeller =  await _invoiceMakerRepository.GetSellerByVATID(request.SellerDto.VATID);
+
+            if (checkSeller.VATID == null)
             {
-                Name = request.SellerDto.Name,
-                VATID = request.SellerDto.VATID,
-                StreetAndNo = request.SellerDto.StreetAndNo,
-                Postcode = request.SellerDto.Postcode,
-                City = request.SellerDto.City
-            });
+                var sellerCommand = _mapper.Map<CreateSellerCommand>(request.SellerDto);
+                await _mediator.Send(sellerCommand);
 
-            var buyer = await _mediator.Send(new CreateBuyerCommand
+                var sellerId = await _invoiceMakerRepository.GetSellerByVATID(request.SellerDto.VATID);
+                request.InvoiceDto.SellerId = sellerId.Id;
+            }
+            else
             {
-                Name = request.BuyerDto.Name,
-                VATID = request.BuyerDto.VATID,
-                StreetAndNo = request.BuyerDto.StreetAndNo,
-                Postcode = request.BuyerDto.Postcode,
-                City = request.BuyerDto.City
-            });
+                request.InvoiceDto.SellerId = checkSeller.Id;
+            }
 
-            var sellerId = await _invoiceMakerRepository.GetSellerByVATID(request.SellerDto.VATID);
-            request.InvoiceDto.SellerId = sellerId.Id;
+            var checkBuyer = await _invoiceMakerRepository.GetBuyerByVATID(request.BuyerDto.VATID);
 
-            request.InvoiceDto.BuyerId = buyer.Id;
-
-            var invoiceId = await _mediator.Send(new CreateInvoiceCommand
+            if(checkBuyer.VATID == null)
             {
-                Number = request.InvoiceDto.Number,
-                IssueDate = request.InvoiceDto.IssueDate,
-                SaleDate = request.InvoiceDto.SaleDate,
-                Place = request.InvoiceDto.Place,
-                SellerId = request.InvoiceDto.SellerId,
-                BuyerId = request.InvoiceDto.BuyerId,
-                PaymentType = request.InvoiceDto.PaymentType,
-                PaymentDeadline = request.InvoiceDto.PaymentDeadline,
-                SellerSignature = request.InvoiceDto.SellerSignature,
-                BuyerSignature = request.InvoiceDto.BuyerSignature,
-                Notes = request.InvoiceDto.Notes
-            });
+                var buyerCommand = _mapper.Map<CreateBuyerCommand>(request.BuyerDto);
+                await _mediator.Send(buyerCommand);
+
+                var buyerId = await _invoiceMakerRepository.GetBuyerByVATID(request.BuyerDto.VATID);
+                request.InvoiceDto.BuyerId = buyerId.Id;
+            }
+            else
+            {
+                request.InvoiceDto.BuyerId = checkBuyer.Id;
+            }
+
+            var invoiceId = _mapper.Map<CreateInvoiceCommand>(request.InvoiceDto);
+            await _mediator.Send(invoiceId);
 
             var createdInvoice = await _invoiceMakerRepository.GetInvoiceByNumber(request.InvoiceDto.Number);
 
             foreach (var item in request.ItemsDto)
             {
                 item.InvoiceId = createdInvoice.Id;
-                await _mediator.Send(new CreateItemCommand
-                {
-                    Name = item.Name,
-                    Quantity = item.Quantity,
-                    Position = item.Position,
-                    Unit = item.Unit,
-                    VAT = item.VAT,
-                    Netto = item.Netto,
-                    Brutto = item.Brutto,
-                    InvoiceId = item.InvoiceId
-                });
+                var itemCommand = _mapper.Map<CreateItemCommand>(item);
+                await _mediator.Send(itemCommand);
             }
 
             return Unit.Value;
