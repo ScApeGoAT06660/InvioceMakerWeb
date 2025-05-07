@@ -1,4 +1,5 @@
 ﻿using InvoiceMaker.Domain;
+using InvoiceMaker.Domain.Entities;
 using InvoiceMaker.Infrastructure.Persistence;
 using System;
 using System.Collections.Generic;

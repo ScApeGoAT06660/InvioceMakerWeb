@@ -10,10 +10,18 @@ namespace InvoiceMaker.Application.Dto
     public class InvoiceDto
     {
         public int Id { get; set; }
+        [Required(ErrorMessage = "Numer faktury jest wymagany")]
+        [StringLength(50, ErrorMessage = "Numer faktury nie może przekraczać 50 znaków")]
         [Display(Name = "Numer")]
         public string? Number { get; set; } = default!;
+
+        [Required(ErrorMessage = "Data wystawienia jest wymagana")]
+        [DataType(DataType.Date)]
         [Display(Name = "Data wystawienia")]
         public DateTime IssueDate { get; set; } = DateTime.Today;
+
+        [Required(ErrorMessage = "Data sprzedaży jest wymagana")]
+        [DataType(DataType.Date)]
         [Display(Name = "Data sprzedaży")]
         public DateTime SaleDate { get; set; } = DateTime.Today;
         [Display(Name = "Miejsce")]

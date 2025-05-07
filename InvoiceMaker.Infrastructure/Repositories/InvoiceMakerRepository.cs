@@ -1,4 +1,4 @@
-﻿using InvoiceMaker.Domain;
+﻿using InvoiceMaker.Domain.Entities;
 using InvoiceMaker.Domain.Interfaces;
 using InvoiceMaker.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;

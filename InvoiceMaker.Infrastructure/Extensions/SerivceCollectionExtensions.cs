@@ -3,6 +3,7 @@ using InvoiceMaker.Domain.Interfaces;
 using InvoiceMaker.Infrastructure.Persistence;
 using InvoiceMaker.Infrastructure.Repositories;
 using InvoiceMaker.Infrastructure.Seeders;
+using InvoiceMaker.Infrastructure.Services;
 using InvoiceMaker.MVC.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

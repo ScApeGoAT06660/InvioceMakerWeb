@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using InvoiceMaker.Domain.Interfaces;
-using InvoiceMaker.Domain;
 using MediatR;
 using AutoMapper;
 using InvoiceMaker.Application.Dto;
 using InvoiceMaker.Application.User;
+using InvoiceMaker.Domain.Entities;
 
 namespace InvoiceMaker.Application.Commands.CreateSeller
 {

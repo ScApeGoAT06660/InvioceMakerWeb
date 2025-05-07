@@ -7,7 +7,7 @@ using AutoMapper;
 using InvoiceMaker.Application.Dto;
 using InvoiceMaker.Application.Queries;
 using InvoiceMaker.Application.User;
-using InvoiceMaker.Domain;
+using InvoiceMaker.Domain.Entities;
 using InvoiceMaker.Domain.Interfaces;
 using MediatR;
 

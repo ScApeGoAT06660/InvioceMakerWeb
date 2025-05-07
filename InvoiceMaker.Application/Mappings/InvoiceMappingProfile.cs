@@ -14,7 +14,7 @@ using InvoiceMaker.Application.Commands.EditInvoice;
 using InvoiceMaker.Application.Commands.EditSeller;
 using InvoiceMaker.Application.Dto;
 using InvoiceMaker.Application.User;
-using InvoiceMaker.Domain;
+using InvoiceMaker.Domain.Entities;
 
 namespace InvoiceMaker.Application.Mappings
 {

@@ -1,0 +1,58 @@
+﻿@model InvoiceMaker.Application.Commands.EditSeller.EditSellerCommand
+
+@{
+    ViewData["Title"] = @Model.Name + " - edycja";
+}
+
+<h2>@Model.Name - edycja</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VATID" class="control-label"></label>
+                <input asp-for="VATID" class="form-control" />
+                <span asp-validation-for="VATID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StreetAndNo" class="control-label"></label>
+                <input asp-for="StreetAndNo" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Postcode" class="control-label"></label>
+                <input asp-for="Postcode" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label>
+                <input asp-for="City" class="form-control" />
+            </div>
+			<div class="form-group">
+				<label asp-for="BankAccount" class="control-label"></label>
+				<input asp-for="BankAccount" class="form-control" />
+			</div>
+			<div class="form-group">
+				<label asp-for="Bank" class="control-label"></label>
+				<input asp-for="Bank" class="form-control" />
+			</div>
+			<div class="form-group">
+				<label asp-for="SWIFT" class="control-label"></label>
+				<input asp-for="SWIFT" class="form-control" />
+			</div>
+			<div>
+				<button type="submit" class="btn btn-primary">Zapisz</button>
+				<a asp-action="Index">Wróć do listy</a>
+			</div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

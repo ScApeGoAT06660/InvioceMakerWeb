@@ -1,23 +1,12 @@
-﻿using InvoiceMaker.Application.Mappings;
-
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation.AspNetCore;
-using FluentValidation;
-using InvoiceMaker.Application.Dto.Validators;
-using InvoiceMaker.Application.Dto;
+﻿using AutoMapper;
 using InvoiceMaker.Application.Commands.Create;
-using MediatR;
-using InvoiceMaker.Application.Commands.CreateSeller;
 using InvoiceMaker.Application.Commands.CreateBuyers;
 using InvoiceMaker.Application.Commands.CreateItems;
+using InvoiceMaker.Application.Commands.CreateSeller;
+using InvoiceMaker.Application.Mappings;
 using InvoiceMaker.Application.User;
-using AutoMapper;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace InvoiceMaker.Application.Extansions
 {
@@ -39,23 +28,6 @@ namespace InvoiceMaker.Application.Extansions
             services.AddMediatR(typeof(CreateSellerCommand));
             services.AddMediatR(typeof(CreateBuyerCommand));
             services.AddMediatR(typeof(CreateItemCommand));
-
-            //Validators
-            services.AddValidatorsFromAssemblyContaining<TraderDtoValidator>()
-                    .AddFluentValidationAutoValidation()
-                    .AddFluentValidationClientsideAdapters();
-
-            services.AddValidatorsFromAssemblyContaining<ItemDtoValidator>()
-                    .AddFluentValidationAutoValidation()
-                    .AddFluentValidationClientsideAdapters();
-
-            services.AddValidatorsFromAssemblyContaining<CreateInvoiceCommandValidator>()
-                    .AddFluentValidationAutoValidation()
-                    .AddFluentValidationClientsideAdapters();
-
-            services.AddValidatorsFromAssemblyContaining<SellerCommandValidator>()
-                    .AddFluentValidationAutoValidation()
-                    .AddFluentValidationClientsideAdapters();
 
             services.AddScoped<IUserContext, UserContext>();
         }

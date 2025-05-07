@@ -1,12 +1,6 @@
-using FluentValidation.AspNetCore;
 using InvoiceMaker.Application.Extansions;
 using InvoiceMaker.Infrastructure.Extensions;
-using InvoiceMaker.Infrastructure.Persistence;
 using InvoiceMaker.Infrastructure.Seeders;
-using Microsoft.EntityFrameworkCore;
-using InvoiceMaker.Application.Dto.Validators;
-using FluentValidation;
-using InvoiceMaker.MVC;
 using System.Globalization;
 
 
