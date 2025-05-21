@@ -22,10 +22,17 @@ namespace InvoiceMaker.Application.Commands.EditBuyer
 
         public async Task<Unit> Handle(EditBuyerCommand request, CancellationToken cancellationToken)
         {
-            var buyer = await _invoiceMakerRepository.GetBuyerByID(request.Id);
-            _mapper.Map(request, buyer);
-            await _invoiceMakerRepository.Commit();
-            return Unit.Value;
+            try
+            {
+                var buyer = await _invoiceMakerRepository.GetBuyerByID(request.Id);
+                _mapper.Map(request, buyer);
+                await _invoiceMakerRepository.Commit();
+                return Unit.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Wystąpił błąd podczas edytowania nabywcy.", ex);
+            }
         }
     }
 }

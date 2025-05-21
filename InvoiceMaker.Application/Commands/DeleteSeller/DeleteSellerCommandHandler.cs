@@ -21,8 +21,15 @@ namespace InvoiceMaker.Application.Commands.DeleteSeller
 
         public async Task<Unit> Handle(DeleteSellerCommand request, CancellationToken cancellationToken)
         {
-            await _invoiceMakerRepository.DeleteSeller(request.Id);
-            return Unit.Value;
+            try
+            {
+                await _invoiceMakerRepository.DeleteSeller(request.Id);
+                return Unit.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Wystąpił błąd podczas usuwania sprzedawcy.", ex);
+            }
         }
     }
 }

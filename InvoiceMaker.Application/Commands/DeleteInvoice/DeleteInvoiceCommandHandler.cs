@@ -19,8 +19,15 @@ namespace InvoiceMaker.Application.Commands.DeleteInvoice
 
         public async Task<Unit> Handle(DeleteInvoiceCommand request, CancellationToken cancellationToken)
         {
-            await _invoiceMakerRepository.DeleteInvoice(request.Id);
-            return Unit.Value;  
+            try
+            {
+                await _invoiceMakerRepository.DeleteInvoice(request.Id);
+                return Unit.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Wystąpił błąd podczas usuwania faktury.", ex);
+            }
         }
     }
 }

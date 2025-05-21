@@ -33,13 +33,13 @@
             <div class="collapse navbar-collapse justify-content-between" id="navcol-1">
                 <ul class="nav navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link text-white" asp-controller="Invoice" asp-action="SellerIndex">Sprzedawcy</a>
+                        <a class="nav-link text-white" asp-controller="Seller" asp-action="Index">Sprzedawcy</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" asp-controller="Invoice" asp-action="BuyerIndex">Nabywcy</a>
+                        <a class="nav-link text-white" asp-controller="Buyer" asp-action="Index">Nabywcy</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" asp-controller="Invoice" asp-action="InvoiceIndex">Faktury</a>
+                        <a class="nav-link text-white" asp-controller="Invoice" asp-action="Index">Faktury</a>
                     </li>
                 </ul>
 				<ul class="navbar-nav ms-auto">
@@ -67,10 +67,6 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/toastr.js/toastr.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@4.0.0/jquery.validate.unobtrusive.min.js"></script>
-
 
     @if (notification != null)
     {
