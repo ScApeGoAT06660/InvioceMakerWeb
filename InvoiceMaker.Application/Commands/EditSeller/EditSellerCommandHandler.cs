@@ -24,13 +24,18 @@ namespace InvoiceMaker.Application.Commands.EditSeller
 
         public async Task<Unit> Handle(EditSellerCommand request, CancellationToken cancellationToken)
         {
-            var seller = await _invoiceMakerRepository.GetSellerByID(request.Id);
+            try
+            {
+                var seller = await _invoiceMakerRepository.GetSellerByID(request.Id);
+                _mapper.Map(request, seller);
+                await _invoiceMakerRepository.Commit();
 
-            _mapper.Map(request, seller);
-
-            await _invoiceMakerRepository.Commit();
-
-            return Unit.Value;
+                return Unit.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Wystąpił błąd podczas edytowania sprzedawcy.", ex);
+            }
         }
     }
 }

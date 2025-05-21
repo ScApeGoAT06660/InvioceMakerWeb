@@ -2,7 +2,28 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@{
+    ViewData["Title"] = "Strona główna";
+}
+
+@if (User.Identity?.IsAuthenticated ?? false)
+{
+    <h1>Witaj, @User.Identity.Name!</h1>
+    <p>Miło Cię znowu widzieć. Co chcesz dziś zrobić?</p>
+    <div class="row text-center">
+        <a asp-controller="Invoice" asp-action="Create" class="btn-main">➕ Nowa faktura</a>
+        
+    </div>
+}
+else
+{
+    <div class="text-center">
+        <h1>Witamy w Invoice Maker</h1>
+        <p class="lead">Prosta aplikacja do tworzenia faktur. Zaloguj się, aby rozpocząć.</p>
+        <a class="btn-main" href="/Identity/Account/Login">Zaloguj się</a>
+        <a class="btn-main" href="/Identity/Account/Register">Zarejestruj się</a>
+    </div>
+}
+
+<img src="https://niceillustrations.com/wp-content/uploads/2021/10/Invoice.png" alt="Ilustracja faktury" style="max-width:100%; height:auto;" />
+

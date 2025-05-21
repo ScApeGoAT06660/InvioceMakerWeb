@@ -27,10 +27,17 @@ namespace InvoiceMaker.Application.Commands.CreateSeller
 
         public async Task<Unit> Handle(CreateSellerCommand request, CancellationToken cancellationToken)
         {
-            var seller = _mapper.Map<Seller>(request);
-            seller.CreatedById = _userContext.GetCurrentUser().Id;
-            await _invoiceMakerRepository.CreateSeller(seller);
-            return Unit.Value;
+            try
+            {
+                var seller = _mapper.Map<Seller>(request);
+                seller.CreatedById = _userContext.GetCurrentUser().Id;
+                await _invoiceMakerRepository.CreateSeller(seller);
+                return Unit.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Wystąpił błąd podczas tworzenia sprzedawcy.", ex);
+            }
         }
     }
 }

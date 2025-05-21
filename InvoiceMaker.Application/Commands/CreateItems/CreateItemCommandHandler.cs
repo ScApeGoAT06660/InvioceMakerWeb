@@ -24,9 +24,16 @@ namespace InvoiceMaker.Application.Commands.CreateItems
 
         public async Task<Unit> Handle(CreateItemCommand request, CancellationToken cancellationToken)
         {
-            var item = _mapper.Map<Item>(request);
-            await _invoiceMakerRepository.CreateItem(item);
-            return Unit.Value;
+            try
+            {
+                var item = _mapper.Map<Item>(request);
+                await _invoiceMakerRepository.CreateItem(item);
+                return Unit.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Wystąpił błąd podczas tworzenia pozycji faktury.", ex);
+            }
         }
     }
 }

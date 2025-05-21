@@ -2,9 +2,17 @@ using InvoiceMaker.Application.Extansions;
 using InvoiceMaker.Infrastructure.Extensions;
 using InvoiceMaker.Infrastructure.Seeders;
 using System.Globalization;
+using InvoiceMaker.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("InvoiceMakerDbContextConnection") ?? throw new InvalidOperationException("Connection string 'InvoiceMakerDbContextConnection' not found.");;
+
+builder.Services.AddDbContext<InvoiceMakerDbContext>(options => options.UseSqlServer(connectionString));
+
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<InvoiceMakerDbContext>();
 
 var cultureInfo = new CultureInfo("pl-PL");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
@@ -15,6 +23,13 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    });
+
 
 var app = builder.Build();
 
@@ -34,7 +49,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

@@ -1,26 +1,15 @@
 ﻿using AutoMapper;
-using InvoiceMaker.Application.Commands.Create;
 using InvoiceMaker.Application.Commands.CreateBuyers;
-using InvoiceMaker.Application.Commands.CreateSeller;
 using InvoiceMaker.Application.Commands.DeleteBuyer;
-using InvoiceMaker.Application.Commands.DeleteInvoice;
-using InvoiceMaker.Application.Commands.DeleteSeller;
 using InvoiceMaker.Application.Commands.EditBuyer;
-using InvoiceMaker.Application.Commands.EditFullInvoice;
-using InvoiceMaker.Application.Commands.EditInvoice;
-using InvoiceMaker.Application.Commands.EditSeller;
-using InvoiceMaker.Application.Commands.GeneratePDFInvoice;
 using InvoiceMaker.Application.Dto;
-using InvoiceMaker.Application.Queries.GetAll;
-using InvoiceMaker.Application.Queries.GetBy;
-using InvoiceMaker.Application.Queries.GetInvoiceNumber;
-using InvoiceMaker.Infrastructure;
+using InvoiceMaker.Application.Queries.GetAll.Buyers;
+using InvoiceMaker.Application.Queries.GetBy.BuyerId;
 using InvoiceMaker.MVC.Extensions;
 using InvoiceMaker.MVC.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace InvoiceMaker.MVC.Controllers
 {
@@ -40,16 +29,32 @@ namespace InvoiceMaker.MVC.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var dto = await _mediator.Send(new GetBuyerByIdQuery(id));
-            return View(dto);
+            try
+            {
+                var dto = await _mediator.Send(new GetBuyerByIdQuery(id));
+                return View(dto);
+            }
+            catch (Exception)
+            {
+                this.SetNotification("error", "Nie udało się pobrać danych kontrahenta.");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var dto = await _mediator.Send(new GetBuyerByIdQuery(id));
-            EditBuyerCommand edit = _mapper.Map<EditBuyerCommand>(dto);
+            try
+            {
+                var dto = await _mediator.Send(new GetBuyerByIdQuery(id));
+                EditBuyerCommand edit = _mapper.Map<EditBuyerCommand>(dto);
 
-            return View(edit);
+                return View(edit);
+            }
+            catch (Exception)
+            {
+                this.SetNotification("error", "Nie udało się wczytać kontrahenta do edycji.");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
@@ -99,8 +104,16 @@ namespace InvoiceMaker.MVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var buyer = await _mediator.Send(new GetAllBuyersQuery());
-            return View(buyer);
+            try
+            {
+                var buyer = await _mediator.Send(new GetAllBuyersQuery());
+                return View(buyer);
+            }
+            catch (Exception)
+            {
+                this.SetNotification("error", "Nie udało się pobrać listy kontrahentów.");
+                return View(new List<BuyerDto>());
+            }
         }
     }
 }

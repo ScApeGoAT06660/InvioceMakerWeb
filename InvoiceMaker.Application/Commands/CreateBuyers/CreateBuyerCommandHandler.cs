@@ -29,14 +29,21 @@ namespace InvoiceMaker.Application.Commands.CreateBuyers
 
         public async Task<BuyerDto> Handle(CreateBuyerCommand request, CancellationToken cancellationToken)
         {
-            var buyer = _mapper.Map<Buyer>(request);
-            buyer.CreatedById = _userContext.GetCurrentUser().Id;
-            await _invoiceMakerRepository.CreateBuyer(buyer);
+            try
+            {
+                var buyer = _mapper.Map<Buyer>(request);
+                buyer.CreatedById = _userContext.GetCurrentUser().Id;
+                await _invoiceMakerRepository.CreateBuyer(buyer);
 
-            var result = _mapper.Map<BuyerDto>(buyer);
-            result.Id = buyer.Id;
+                var result = _mapper.Map<BuyerDto>(buyer);
+                result.Id = buyer.Id;
 
-            return result;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Wystąpił błąd podczas tworzenia nabywcy.", ex);
+            }
         }
     }
 }

@@ -1,20 +1,17 @@
 ﻿using AutoMapper;
 using InvoiceMaker.Application.Commands.Create;
-using InvoiceMaker.Application.Commands.CreateBuyers;
-using InvoiceMaker.Application.Commands.CreateSeller;
-using InvoiceMaker.Application.Commands.DeleteBuyer;
 using InvoiceMaker.Application.Commands.DeleteInvoice;
-using InvoiceMaker.Application.Commands.DeleteSeller;
-using InvoiceMaker.Application.Commands.EditBuyer;
 using InvoiceMaker.Application.Commands.EditFullInvoice;
-using InvoiceMaker.Application.Commands.EditInvoice;
-using InvoiceMaker.Application.Commands.EditSeller;
 using InvoiceMaker.Application.Commands.GeneratePDFInvoice;
 using InvoiceMaker.Application.Dto;
-using InvoiceMaker.Application.Queries.GetAll;
+using InvoiceMaker.Application.Queries.GetAll.Buyers;
+using InvoiceMaker.Application.Queries.GetAll.Invoices;
+using InvoiceMaker.Application.Queries.GetAll.Sellers;
 using InvoiceMaker.Application.Queries.GetBy;
+using InvoiceMaker.Application.Queries.GetBy.BuyerId;
+using InvoiceMaker.Application.Queries.GetBy.ItemByInvoiceId;
+using InvoiceMaker.Application.Queries.GetBy.SellerId;
 using InvoiceMaker.Application.Queries.GetInvoiceNumber;
-using InvoiceMaker.Infrastructure;
 using InvoiceMaker.MVC.Extensions;
 using InvoiceMaker.MVC.Services;
 using MediatR;
@@ -40,32 +37,38 @@ namespace InvoiceMaker.MVC.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var newInvoiceNumber = await _mediator.Send(new GetNewInvoiceNumberQuery());
-            var sellers = await _mediator.Send(new GetAllSellersQuery());
-            var buyers = await _mediator.Send(new GetAllBuyersQuery());
-
-            var command = new CreateFullInvoiceCommand
+            try
             {
-                InvoiceDto = new InvoiceDto
+                var newInvoiceNumber = await _mediator.Send(new GetNewInvoiceNumberQuery());
+                var sellers = await _mediator.Send(new GetAllSellersQuery());
+                var buyers = await _mediator.Send(new GetAllBuyersQuery());
+
+                var command = new CreateFullInvoiceCommand
                 {
-                    Number = newInvoiceNumber.ToString()
-                },
-                ItemsDto = new List<ItemDto> { new ItemDto() },
-                PaymentOptionsList = _dropdownOptionsProvider.GetPaymentMethods(),
-                DeadlineOptionsList = _dropdownOptionsProvider.GetPaymentDeadlines(),
-                Sellers = sellers.ToList(),
-                Buyers = buyers.ToList()
-            };
+                    InvoiceDto = new InvoiceDto { Number = newInvoiceNumber.ToString() },
+                    ItemsDto = new List<ItemDto> { new ItemDto() },
+                    PaymentOptionsList = _dropdownOptionsProvider.GetPaymentMethods(),
+                    DeadlineOptionsList = _dropdownOptionsProvider.GetPaymentDeadlines(),
+                    Sellers = sellers.ToList(),
+                    Buyers = buyers.ToList()
+                };
 
-            if (Request.Cookies.TryGetValue("LastSellerId", out var sellerIdStr)
-            && int.TryParse(sellerIdStr, out var sellerId))
-            {
-                var sellerDto = await _mediator.Send(new GetSellerByIdQuery(sellerId));
-                command.SellerDto = sellerDto;
+                if (Request.Cookies.TryGetValue("LastSellerId", out var sellerIdStr) &&
+                    int.TryParse(sellerIdStr, out var sellerId))
+                {
+                    var sellerDto = await _mediator.Send(new GetSellerByIdQuery(sellerId));
+                    command.SellerDto = sellerDto;
+                }
+
+                return View(command);
             }
-
-            return View(command);
+            catch (Exception)
+            {
+                this.SetNotification("error", "Wystąpił błąd podczas przygotowywania formularza faktury.");
+                return RedirectToAction(nameof(Index));
+            }
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateFullInvoiceCommand model)
@@ -144,38 +147,54 @@ namespace InvoiceMaker.MVC.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-            var dto = await _mediator.Send(new GetInvoiceByNumberQuery(id));
-            return View(dto);
+            try
+            {
+                var dto = await _mediator.Send(new GetInvoiceByNumberQuery(id));
+                return View(dto);
+            }
+            catch (Exception)
+            {
+                this.SetNotification("error", "Wystąpił błąd podczas pobierania faktury.");
+                return RedirectToAction(nameof(Index));
+            }
         }       
   
         public async Task<IActionResult> Edit(int id)
         {
-            var invoiceDto = await _mediator.Send(new GetInvoiceByNumberQuery(id));
-            var sellerDto = await _mediator.Send(new GetSellerByIdQuery(invoiceDto.SellerId));
-            var buyerDto = await _mediator.Send(new GetBuyerByIdQuery(invoiceDto.BuyerId));
-            var itemsDto = await _mediator.Send(new GetItemsByInvoiceIdQuery(id));
-
-            var edit = new EditFullInvoiceCommand
+            try
             {
-                InvoiceDto = invoiceDto,
-                SellerDto = sellerDto,
-                BuyerDto = buyerDto,
-                ItemsDto = itemsDto
-            };
+                var invoiceDto = await _mediator.Send(new GetInvoiceByNumberQuery(id));
+                var sellerDto = await _mediator.Send(new GetSellerByIdQuery(invoiceDto.SellerId));
+                var buyerDto = await _mediator.Send(new GetBuyerByIdQuery(invoiceDto.BuyerId));
+                var itemsDto = await _mediator.Send(new GetItemsByInvoiceIdQuery(id));
 
-            edit.SelectedPaymentOption = edit.InvoiceDto.PaymentType;
-            edit.SelectedPaymentDeadline = edit.InvoiceDto.PaymentDeadline;
+                var edit = new EditFullInvoiceCommand
+                {
+                    InvoiceDto = invoiceDto,
+                    SellerDto = sellerDto,
+                    BuyerDto = buyerDto,
+                    ItemsDto = itemsDto
+                };
 
-            edit.PaymentOptionsList = _dropdownOptionsProvider.GetPaymentMethods();
+                edit.SelectedPaymentOption = edit.InvoiceDto.PaymentType;
+                edit.SelectedPaymentDeadline = edit.InvoiceDto.PaymentDeadline;
 
-            edit.DeadlineOptionsList = _dropdownOptionsProvider.GetPaymentDeadlines();
+                edit.PaymentOptionsList = _dropdownOptionsProvider.GetPaymentMethods();
 
-            if (edit.ItemsDto == null || !edit.ItemsDto.Any())
-            {
-                edit.ItemsDto = new List<ItemDto> { new ItemDto() };
+                edit.DeadlineOptionsList = _dropdownOptionsProvider.GetPaymentDeadlines();
+
+                if (edit.ItemsDto == null || !edit.ItemsDto.Any())
+                {
+                    edit.ItemsDto = new List<ItemDto> { new ItemDto() };
+                }
+
+                return View(edit);
             }
-
-            return View(edit);
+            catch (Exception)
+            {
+                this.SetNotification("error", "Wystąpił błąd podczas pobierania faktury.");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
@@ -189,27 +208,55 @@ namespace InvoiceMaker.MVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var invoices = await _mediator.Send(new GetAllInvoicesQuery());
-            return View(invoices);
+            try
+            {
+                var invoices = await _mediator.Send(new GetAllInvoicesQuery());
+                return View(invoices);
+            }
+            catch (Exception)
+            {
+                this.SetNotification("error", "Wystąpił błąd podczas ładowania listy faktur.");
+                return View(new List<InvoiceDto>()); // lub RedirectToAction("Home", "Error");
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetBuyerByVatNumber(string nip)
         {
-            var buyer = await _mediator.Send(new GetBuyerByNipQuery(nip));
+            try
+            {
+                var buyer = await _mediator.Send(new GetBuyerByNipQuery(nip));
 
-            if (buyer == null)
-                return NotFound("Nie znaleziono kontrahenta");
+                if (buyer == null)
+                    return NotFound("Nie znaleziono kontrahenta");
 
-            return Json(buyer);
+                return Json(buyer);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Wystąpił błąd podczas wyszukiwania kontrahenta.");
+            }
         }
 
         [HttpGet("Invoice/Download/{id}")]
         public async Task<IActionResult> DownloadPDF(int id)
         {
-            var pdfBytes = await _mediator.Send(new GeneratePdfInvoiceCommand(id));
-            var fileName = $"Faktura_{id}.pdf";
-            return File(pdfBytes, "application/pdf", fileName);
+            try
+            {
+                var pdfBytes = await _mediator.Send(new GeneratePdfInvoiceCommand(id));
+
+                if (pdfBytes == null || pdfBytes.Length == 0)
+                    return NotFound("Nie udało się wygenerować pliku PDF.");
+
+                var fileName = $"Faktura_{id}.pdf";
+                return File(pdfBytes, "application/pdf", fileName);
+            }
+            catch (Exception)
+            {
+                this.SetNotification("error", "Wystąpił błąd podczas pobierania faktury PDF.");
+                return RedirectToAction(nameof(Index));
+            }
         }
+
     }
 }

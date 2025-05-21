@@ -28,39 +28,46 @@ namespace InvoiceMaker.Application.Commands.EditFullInvoice
 
         public async Task<Unit> Handle(EditFullInvoiceCommand request, CancellationToken cancellationToken)
         {
-            var existingSeller = await _invoiceMakerRepository.GetSellerByVATID(request.SellerDto.VATID);
-            if (existingSeller == null)
+            try
             {
-                var sellerCommand = _mapper.Map<CreateSellerCommand>(request.SellerDto);
-                await _mediator.Send(sellerCommand);
-                existingSeller = await _invoiceMakerRepository.GetSellerByVATID(request.SellerDto.VATID);
-            }
-            request.InvoiceDto.SellerId = existingSeller.Id;
+                var existingSeller = await _invoiceMakerRepository.GetSellerByVATID(request.SellerDto.VATID);
+                if (existingSeller == null)
+                {
+                    var sellerCommand = _mapper.Map<CreateSellerCommand>(request.SellerDto);
+                    await _mediator.Send(sellerCommand);
+                    existingSeller = await _invoiceMakerRepository.GetSellerByVATID(request.SellerDto.VATID);
+                }
+                request.InvoiceDto.SellerId = existingSeller.Id;
 
-            var existingBuyer = await _invoiceMakerRepository.GetBuyerByVATID(request.BuyerDto.VATID);
-            if (existingBuyer == null)
+                var existingBuyer = await _invoiceMakerRepository.GetBuyerByVATID(request.BuyerDto.VATID);
+                if (existingBuyer == null)
+                {
+                    var buyerCommand = _mapper.Map<CreateBuyerCommand>(request.BuyerDto);
+                    await _mediator.Send(buyerCommand);
+                    existingBuyer = await _invoiceMakerRepository.GetBuyerByVATID(request.BuyerDto.VATID);
+                }
+                request.InvoiceDto.BuyerId = existingBuyer.Id;
+
+                var editInvoiceCommand = _mapper.Map<EditInvoiceCommand>(request.InvoiceDto);
+                await _mediator.Send(editInvoiceCommand);
+
+                var invoice = await _invoiceMakerRepository.GetInvoiceByNumber(request.InvoiceDto.Number);
+
+                invoice.Items.Clear();
+
+                foreach (var item in request.ItemsDto)
+                {
+                    item.InvoiceId = invoice.Id;
+                    var itemCommand = _mapper.Map<CreateItemCommand>(item);
+                    await _mediator.Send(itemCommand);
+                }
+
+                return Unit.Value;
+            }
+            catch(Exception ex)
             {
-                var buyerCommand = _mapper.Map<CreateBuyerCommand>(request.BuyerDto);
-                await _mediator.Send(buyerCommand);
-                existingBuyer = await _invoiceMakerRepository.GetBuyerByVATID(request.BuyerDto.VATID);
+                throw new ApplicationException("Wystąpił błąd podczas edytowania faktury.", ex);
             }
-            request.InvoiceDto.BuyerId = existingBuyer.Id;
-
-            var editInvoiceCommand = _mapper.Map<EditInvoiceCommand>(request.InvoiceDto);
-            await _mediator.Send(editInvoiceCommand);
-
-            var invoice = await _invoiceMakerRepository.GetInvoiceByNumber(request.InvoiceDto.Number);
-
-            invoice.Items.Clear();
-
-            foreach (var item in request.ItemsDto)
-            {
-                item.InvoiceId = invoice.Id;
-                var itemCommand = _mapper.Map<CreateItemCommand>(item);
-                await _mediator.Send(itemCommand);
-            }
-
-            return Unit.Value;
         }
     }
 }
