@@ -77,9 +77,9 @@
                     <td><input asp-for="ItemsDto[@i].Name" class="form-control" /></td>
                     <td><input asp-for="ItemsDto[@i].Unit" class="form-control" /></td>
                     <td><input asp-for="ItemsDto[@i].Quantity" class="form-control" type="number" /></td>
-                    <td><input asp-for="ItemsDto[@i].Netto" class="form-control" /></td>
+                        <td><input asp-for="ItemsDto[@i].Netto" class="form-control decimal-input" /></td>
                     <td><input asp-for="ItemsDto[@i].VAT" class="form-control" /></td>
-                    <td><input asp-for="ItemsDto[@i].Brutto" class="form-control" /></td>
+                        <td><input asp-for="ItemsDto[@i].Brutto" class="form-control decimal-input" /></td>
                     <td><button type="button" class="btn-delete" onclick="deleteRow(this)">Usuń</button></td>
                 </tr>
             }
@@ -138,9 +138,9 @@
                     <td><input name="ItemsDto[${itemIndex}].Name" class="form-control" /></td>
                     <td><input name="ItemsDto[${itemIndex}].Unit" class="form-control" /></td>
                     <td><input name="ItemsDto[${itemIndex}].Quantity" class="form-control" type="number" /></td>
-                    <td><input name="ItemsDto[${itemIndex}].Netto" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Netto" class="form-control decimal-input" /></td>
                     <td><input name="ItemsDto[${itemIndex}].VAT" class="form-control" /></td>
-                    <td><input name="ItemsDto[${itemIndex}].Brutto" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Brutto" class="form-control decimal-input" /></td>
                     <td><button type="button" class="btn-delete" onclick="deleteRow(this)">Usuń</button></td>
                 </tr>
             `;
@@ -166,6 +166,20 @@
             const row = button.closest("tr");
             row.remove();
             refreshInputs();
+
         }
     </script>
+
+        <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll("form").forEach(form => {
+                form.addEventListener("submit", function () {
+                    form.querySelectorAll("input.decimal-input").forEach(input => {
+                        input.value = input.value.replace(",", ".");
+                    });
+                });
+            });
+        });
+    </script>
+
 }

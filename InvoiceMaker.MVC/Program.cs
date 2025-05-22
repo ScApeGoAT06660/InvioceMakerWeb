@@ -5,24 +5,31 @@ using System.Globalization;
 using InvoiceMaker.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("InvoiceMakerDbContextConnection") ?? throw new InvalidOperationException("Connection string 'InvoiceMakerDbContextConnection' not found.");;
 
+var connectionString = builder.Configuration.GetConnectionString("InvoiceMakerDbContextConnection")
+    ?? throw new InvalidOperationException("Connection string 'InvoiceMakerDbContextConnection' not found.");
 builder.Services.AddDbContext<InvoiceMakerDbContext>(options => options.UseSqlServer(connectionString));
 
-//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<InvoiceMakerDbContext>();
-
-var cultureInfo = new CultureInfo("pl-PL");
+var cultureInfo = new CultureInfo("en-US");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+var supportedCultures = new[] { cultureInfo };
 
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture(cultureInfo);
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
+
+builder.Services.AddControllersWithViews();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+
 builder.Services.AddAuthentication()
     .AddGoogle(options =>
     {
@@ -30,24 +37,24 @@ builder.Services.AddAuthentication()
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
     });
 
-
 var app = builder.Build();
 
-var scope = app.Services.CreateScope();
+using (var scope = app.Services.CreateScope())
+{
+    var seed = scope.ServiceProvider.GetRequiredService<InvoiceMakerSeeder>();
+    await seed.Seed();
+}
 
-var seed = scope.ServiceProvider.GetRequiredService<InvoiceMakerSeeder>();
-
-await seed.Seed();
-
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+
+app.UseRequestLocalization();
+
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
