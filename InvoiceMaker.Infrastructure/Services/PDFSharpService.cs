@@ -187,16 +187,24 @@ namespace InvoiceMaker.Infrastructure.Services
             gfx.DrawString("Podpis wystawiającego:", font, XBrushes.Black, new XPoint(40, y));
             gfx.DrawString("Podpis nabywcy:", font, XBrushes.Black, new XPoint(300, y));
             y += 15;
-            gfx.DrawString(_invoice.SellerSignature, font, XBrushes.Black, new XPoint(40, y));
-            gfx.DrawString(_invoice.BuyerSignature, font, XBrushes.Black, new XPoint(300, y));
+
+            if (!string.IsNullOrWhiteSpace(_invoice.SellerSignature))
+                gfx.DrawString(_invoice.SellerSignature, font, XBrushes.Black, new XPoint(40, y));
+
+            if (!string.IsNullOrWhiteSpace(_invoice.BuyerSignature))
+                gfx.DrawString(_invoice.BuyerSignature, font, XBrushes.Black, new XPoint(300, y));
+
             y += 30;
 
             gfx.DrawString("Uwagi:", font, XBrushes.Black, new XPoint(40, y));
             y += 15;
-            gfx.DrawString(_invoice.Notes, font, XBrushes.Black, new XRect(40, y, 500, 100), XStringFormats.TopLeft);
+
+            if (!string.IsNullOrWhiteSpace(_invoice.Notes))
+                gfx.DrawString(_invoice.Notes, font, XBrushes.Black, new XRect(40, y, 500, 100), XStringFormats.TopLeft);
 
             return y + 100;
         }
+
 
         private int DrawSellerAndBuyer(XGraphics gfx, XFont font, int y)
         {

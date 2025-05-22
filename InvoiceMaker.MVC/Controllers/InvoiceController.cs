@@ -251,9 +251,9 @@ namespace InvoiceMaker.MVC.Controllers
                 var fileName = $"Faktura_{id}.pdf";
                 return File(pdfBytes, "application/pdf", fileName);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                this.SetNotification("error", "Wystąpił błąd podczas pobierania faktury PDF.");
+                this.SetNotification("error", $"Wystąpił błąd podczas pobierania faktury PDF: {ex}");
                 return RedirectToAction(nameof(Index));
             }
         }
