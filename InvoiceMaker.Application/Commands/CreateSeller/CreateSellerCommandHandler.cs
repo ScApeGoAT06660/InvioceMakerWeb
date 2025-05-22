@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using InvoiceMaker.Domain.Interfaces;
-using InvoiceMaker.Domain;
 using MediatR;
 using AutoMapper;
 using InvoiceMaker.Application.Dto;
 using InvoiceMaker.Application.User;
+using InvoiceMaker.Domain.Entities;
 
 namespace InvoiceMaker.Application.Commands.CreateSeller
 {
@@ -27,10 +27,17 @@ namespace InvoiceMaker.Application.Commands.CreateSeller
 
         public async Task<Unit> Handle(CreateSellerCommand request, CancellationToken cancellationToken)
         {
-            var seller = _mapper.Map<Seller>(request);
-            seller.CreatedById = _userContext.GetCurrentUser().Id;
-            await _invoiceMakerRepository.CreateSeller(seller);
-            return Unit.Value;
+            try
+            {
+                var seller = _mapper.Map<Seller>(request);
+                seller.CreatedById = _userContext.GetCurrentUser().Id;
+                await _invoiceMakerRepository.CreateSeller(seller);
+                return Unit.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Wystąpił błąd podczas tworzenia sprzedawcy.", ex);
+            }
         }
     }
 }

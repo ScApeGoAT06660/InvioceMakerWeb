@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using InvoiceMaker.Domain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using InvoiceMaker.Domain.Entities;
 
 namespace InvoiceMaker.Infrastructure.Persistence
 {

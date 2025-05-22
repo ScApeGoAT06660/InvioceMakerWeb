@@ -1,4 +1,4 @@
-﻿using InvoiceMaker.Domain;
+﻿using InvoiceMaker.Domain.Entities;
 
 namespace InvoiceMaker.Application.Services
 {

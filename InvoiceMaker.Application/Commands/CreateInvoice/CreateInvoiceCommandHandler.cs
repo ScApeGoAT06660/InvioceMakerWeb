@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using InvoiceMaker.Application.Dto;
 using InvoiceMaker.Domain.Interfaces;
-using InvoiceMaker.Domain;
 using MediatR;
 using AutoMapper;
 using InvoiceMaker.Application.User;
+using InvoiceMaker.Domain.Entities;
 
 namespace InvoiceMaker.Application.Commands.Create
 {
@@ -28,11 +28,18 @@ namespace InvoiceMaker.Application.Commands.Create
 
         public async Task<Unit> Handle(CreateInvoiceCommand request, CancellationToken cancellationToken)
         {
-            var invoice = _mapper.Map<Invoice>(request);
-            invoice.CreatedById = _userContext.GetCurrentUser().Id; 
-            await _invoiceMakerRepository.CreateInvoice(invoice);
+            try
+            {
+                var invoice = _mapper.Map<Invoice>(request);
+                invoice.CreatedById = _userContext.GetCurrentUser().Id;
+                await _invoiceMakerRepository.CreateInvoice(invoice);
 
-            return Unit.Value;
+                return Unit.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Wystąpił błąd podczas tworzenia faktury", ex);
+            }
         }
     }
 }

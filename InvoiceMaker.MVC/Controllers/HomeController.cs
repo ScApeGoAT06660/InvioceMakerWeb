@@ -22,7 +22,7 @@ public class HomeController : Controller
         About about = new About
         {
             Name = "Julita",
-            Description = "Dupadupadua,"
+            Description = ""
         };
     
         return View(about);

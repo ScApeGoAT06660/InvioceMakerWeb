@@ -10,8 +10,13 @@ namespace InvoiceMaker.Application.Dto
     public class TraderDto
     {
         public int Id { get; set; }
+        [Required(ErrorMessage = "Nazwa firmy jest wymagana")]
+        [StringLength(100, ErrorMessage = "Nazwa firmy nie może przekraczać 100 znaków")]
         [Display(Name = "Nazwa firmy")]
         public string Name { get; set; } = default!;
+
+        [Required(ErrorMessage = "NIP jest wymagany")]
+        [StringLength(20, ErrorMessage = "NIP nie może przekraczać 20 znaków")]
         [Display(Name = "NIP")]
         public string VATID { get; set; } = default!;
         [Display(Name = "Ulica")]

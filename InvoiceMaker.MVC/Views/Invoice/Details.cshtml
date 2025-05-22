@@ -1,0 +1,77 @@
+﻿@model InvoiceMaker.Application.Dto.InvoiceDto
+
+@{
+    ViewData["Title"] = @Model.Number + " - podgląd";
+}
+
+<h2> @Model.Number - podgląd</h2>
+
+<div>
+
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Data wystawienia</dt>
+        <dd class="col-sm-10">@Model.IssueDate.ToShortDateString()</dd>
+
+        <dt class="col-sm-2">Data sprzedaży</dt>
+        <dd class="col-sm-10">@Model.SaleDate.ToShortDateString()</dd>
+
+        <dt class="col-sm-2">Miejscowość</dt>
+        <dd class="col-sm-10">@Model.Place</dd>
+
+        <dt class="col-sm-2">Sprzedawca</dt>
+        <dd class="col-sm-10">@Model.Seller.Name</dd>
+
+        <dt class="col-sm-2">Kontrahent</dt>
+        <dd class="col-sm-10">@Model.Buyer.Name</dd>
+
+        <dt class="col-sm-2">Rodzaj płatności</dt>
+        <dd class="col-sm-10">@Model.PaymentType</dd>
+
+        <dt class="col-sm-2">Termin płatności</dt>
+        <dd class="col-sm-10">@Model.PaymentDeadline</dd>
+
+        <!-- wróc tu i popraw model -->
+
+        <dt class="col-sm-2">Notatki</dt>
+        <dd class="col-sm-10">
+            @(string.IsNullOrWhiteSpace(Model.Notes) ? "(brak)" : Model.Notes)
+        </dd>
+
+    </dl>
+
+        <h4>Pozycje faktury<br /></h4>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Nazwa</th>
+                    <th>Ilość</th>
+                    <th>Jednostka</th>
+                    <th>Netto</th>
+                    <th>VAT</th>
+                    <th>Brutto</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.Unit</td>
+                        <td>@item.Netto.ToString("N2")</td>
+                        <td>@item.VAT</td>
+                        <td>@item.Brutto.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+ 
+</div>
+<div>
+    <a asp-controller="Invoice" asp-action="Edit" asp-route-id="@Model.Id" class="btn-main">Edytuj</a>
+
+    <a asp-action="Index">Wróć do listy</a>
+</div>

@@ -1,0 +1,337 @@
+﻿@using InvoiceMaker.Application.Commands.Create
+@model CreateFullInvoiceCommand
+
+@{
+    ViewData["Title"] = "Dodaj nową fakturę";
+}
+
+<h2 class="text-center mt-4 mb-5">Faktura VAT</h2>
+
+<form asp-action="CreateFullInvoice" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <label asp-for="InvoiceDto.Number" class="form-label">Numer faktury</label>
+            <input asp-for="InvoiceDto.Number" readonly class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="InvoiceDto.IssueDate" class="form-label">Data wystawienia</label>
+            <input asp-for="InvoiceDto.IssueDate" type="date" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="InvoiceDto.Place" class="form-label">Miejsce wystawienia</label>
+            <input asp-for="InvoiceDto.Place" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="InvoiceDto.SaleDate" class="form-label">Data sprzedaży</label>
+            <input asp-for="InvoiceDto.SaleDate" type="date" class="form-control" />
+        </div>
+    </div>
+
+
+    <hr />
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h5>Sprzedawca</h5>
+            <input asp-for="SellerDto.Name" class="form-control mb-2" placeholder="Nazwa firmy" />
+            <span asp-validation-for="SellerDto.Name" class="text-danger"></span>
+
+            <input asp-for="SellerDto.VATID" class="form-control mb-2" placeholder="NIP" />
+            <span asp-validation-for="SellerDto.VATID" class="text-danger"></span>
+
+            <input asp-for="SellerDto.StreetAndNo" class="form-control mb-2" placeholder="Ulica i numer" />
+            <input asp-for="SellerDto.Postcode" class="form-control mb-2" placeholder="Kod pocztowy" />
+            <input asp-for="SellerDto.City" class="form-control mb-2" placeholder="Miasto" />
+            <input asp-for="SellerDto.BankAccount" class="form-control mb-2" placeholder="Numer konta" />
+            <input asp-for="SellerDto.SWIFT" class="form-control mb-2" placeholder="SWIFT" />
+            <input asp-for="SellerDto.Bank" class="form-control mb-2" placeholder="Bank" />
+            <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#SellersModal">
+                <i class="bi bi-file-person"></i> Lista sprzedawców
+            </button>
+        </div>
+        <div class="col-md-6">
+            <h5>Kupujący</h5>
+            <input asp-for="BuyerDto.Name" class="form-control mb-2" placeholder="Nazwa firmy" />
+            <span asp-validation-for="BuyerDto.Name" class="text-danger"></span>
+
+            <input asp-for="BuyerDto.VATID" class="form-control mb-2" placeholder="NIP" />
+            <span asp-validation-for="BuyerDto.VATID" class="text-danger"></span>
+
+            <input asp-for="BuyerDto.StreetAndNo" class="form-control mb-2" placeholder="Ulica i numer" />
+            <input asp-for="BuyerDto.Postcode" class="form-control mb-2" placeholder="Kod pocztowy" />
+            <input asp-for="BuyerDto.City" class="form-control mb-2" placeholder="Miasto" />
+            <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#BuyersModal">
+                <i class="bi bi-file-person"></i> Lista kontrahentów
+            </button>
+            <button type="button" class="btn btn-dark" onclick="getBuyerFromMRiF()">
+                <i class="bi bi-briefcase-fill"></i> MRIF
+            </button>
+
+        </div>
+    </div>
+
+    <hr />
+    <h5>Pozycje</h5>
+    <table class="table invoice-table">
+        <thead class="table-light">
+            <tr>
+                <th class="col-lp">Lp</th>
+                <th class="col-name">Nazwa</th>
+                <th class="col-unit">Jm</th>
+                <th class="col-qty">Ilość</th>
+                <th class="col-netto">Netto</th>
+                <th class="col-vat">VAT (%)</th>
+                <th class="col-brutto">Brutto</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.ItemsDto.Count; i++)
+            {
+                <tr>
+                    <td class="col-lp">@(i + 1)</td>
+                    <td class="col-name"><input asp-for="ItemsDto[@i].Name" class="form-control" />
+                        <span asp-validation-for="ItemsDto[@i].Name" class="text-danger"></span>
+                        </td>
+                    <td class="col-unit"><input asp-for="ItemsDto[@i].Unit" class="form-control" />
+                        <span asp-validation-for="ItemsDto[@i].Unit" class="text-danger"></span>
+                        </td>
+                    <td class="col-qty"><input asp-for="ItemsDto[@i].Quantity" class="form-control" type="number" />
+                        <span asp-validation-for="ItemsDto[@i].Quantity" class="text-danger"></span>
+                        </td>
+                    <td class="col-netto"><input asp-for="ItemsDto[@i].Netto" class="form-control" />
+                        <span asp-validation-for="ItemsDto[@i].Netto" class="text-danger"></span>
+                        </td>
+                    <td class="col-vat"><input asp-for="ItemsDto[@i].VAT" class="form-control" />
+                        </td>
+                    <td class="col-brutto"><input asp-for="ItemsDto[@i].Brutto" class="form-control" />
+                        <span asp-validation-for="ItemsDto[@i].Brutto" class="text-danger"></span>
+                        </td>
+                    <td><button type="button" class="btn-delete" onclick="deleteRow(this)">Usuń</button>
+                        </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-link" id="addNewItem">+ Dodaj pozycję</button>
+
+    <hr />
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label asp-for="SelectedPaymentOption">Forma płatności</label>
+            <select asp-for="SelectedPaymentOption" asp-items="Model.PaymentOptionsList" class="select-match-input"
+                    asp-option-label="Wybierz"></select>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="SelectedPaymentDeadline">Termin płatności</label>
+            <select asp-for="SelectedPaymentDeadline" asp-items="Model.DeadlineOptionsList" class="select-match-input"
+                    asp-option-label="Wybierz"></select>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <label asp-for="InvoiceDto.Notes">Uwagi do faktury:</label>
+            <textarea asp-for="InvoiceDto.Notes" class="form-control"></textarea>
+        </div>
+        <div class="col-md-3 text-center">
+            <label asp-for="InvoiceDto.SellerSignature">Podpis sprzedawcy</label>
+            <input asp-for="InvoiceDto.SellerSignature" class="form-control" />
+        </div>
+        <div class="col-md-3 text-center">
+            <label asp-for="InvoiceDto.BuyerSignature">Podpis kupującego</label>
+            <input asp-for="InvoiceDto.BuyerSignature" class="form-control" />
+        </div>
+    </div>
+
+    <hr />
+    <div class="text-end">
+        <button type="submit" class="btn btn-success">Zapisz fakturę</button>
+    </div>
+</form>
+
+
+<!-- SellerModal -->
+<div class="modal fade" id="SellersModal" tabindex="-1" role="dialog" aria-labelledby="SellersModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SellersModalLabel">Sprzedawcy</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group">
+                    @foreach (var seller in Model.Sellers)
+                    {
+                        <a href="#"
+                           class="list-group-item list-group-item-action select-seller"
+                           data-name="@seller.Name"
+                           data-vatid="@seller.VATID"
+                           data-street="@seller.StreetAndNo"
+                           data-city="@seller.City"
+                           data-postcode="@seller.Postcode"
+                           data-bankaccount="@seller.BankAccount"
+                           data-swift"="@seller.SWIFT"
+                           data-bank="@seller.Bank">
+                            @seller.Name – @seller.VATID
+                        </a>
+                    }
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BuyerModal -->
+<div class="modal fade" id="BuyersModal" tabindex="-1" role="dialog" aria-labelledby="BuyersModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="BuyersModalLabel">Kontrahenci</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group">
+                    @foreach (var buyer in Model.Buyers)
+                    {
+                        <a href="#"
+                           class="list-group-item list-group-item-action select-buyer"
+                           data-name="@buyer.Name"
+                           data-vatid="@buyer.VATID"
+                           data-street="@buyer.StreetAndNo"
+                           data-city="@buyer.City"
+                           data-postcode="@buyer.Postcode">
+                            @buyer.Name – @buyer.VATID
+                        </a>
+                    }
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).on("click", ".select-seller", function () {
+            $("#SellerDto_Name").val($(this).data("name"));
+            $("#SellerDto_VATID").val($(this).data("vatid"));
+            $("#SellerDto_StreetAndNo").val($(this).data("street"));
+            $("#SellerDto_City").val($(this).data("city"));
+            $("#SellerDto_Postcode").val($(this).data("postcode"));
+            $("#SellerDto_BankAccount").val($(this).data("bankaccount"));
+            $("#SellerDto_SWIFT").val($(this).data("swift"));
+            $("#SellerDto_Bank").val($(this).data("bank"));
+            $("#SellersModal").modal("hide");
+        });
+    </script>
+
+    <script>
+        $(document).on("click", ".select-buyer", function () {
+            $("#BuyerDto_Name").val($(this).data("name"));
+            $("#BuyerDto_VATID").val($(this).data("vatid"));
+            $("#BuyerDto_StreetAndNo").val($(this).data("street"));
+            $("#BuyerDto_City").val($(this).data("city"));
+            $("#BuyerDto_Postcode").val($(this).data("postcode"));
+            $("#BuyersModal").modal("hide");
+        });
+    </script>
+
+    <script>
+        let btnAdd = document.getElementById("addNewItem");
+        let itemTableBody = document.querySelector("table tbody");
+        let itemIndex = @Model.ItemsDto.Count;
+
+        btnAdd.addEventListener('click', () => {
+            let template = `
+                <tr>
+                    <td>${itemIndex + 1}</td>
+                    <td><input name="ItemsDto[${itemIndex}].Name" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Unit" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Quantity" class="form-control" type="number" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Netto" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].VAT" class="form-control" /></td>
+                    <td><input name="ItemsDto[${itemIndex}].Brutto" class="form-control" /></td>
+                    <td><button type="button" class="btn-delete" onclick="deleteRow(this)">Usuń</button></td>
+                </tr>
+            `;
+            itemTableBody.insertAdjacentHTML('beforeend', template);
+            itemIndex++;
+        });
+    </script>
+
+    <script>
+        function refreshInputs() {
+            const rows = document.querySelectorAll("tbody tr");
+            rows.forEach((row, index) => {
+                row.querySelector("td").textContent = index + 1;
+                row.querySelectorAll("input").forEach(input => {
+                    const propMatch = input.name.match(/\.(\w+)$/);
+                    if (propMatch) {
+                        input.name = `ItemsDto[${index}].${propMatch[1]}`;
+                    }
+                });
+            });
+            itemIndex = rows.length;
+        }
+
+            function deleteRow(button) {
+                const row = button.closest("tr");
+                row.remove();
+                refreshInputs();
+            }
+    </script>
+
+    <script>
+        async function getBuyerFromMRiF() {
+            const nip = $("#BuyerDto_VATID").val();
+
+            if (!nip) {
+                alert("Podaj NIP.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Invoice/GetBuyerByVatNumber?nip=${nip}`);
+                if (!response.ok) {
+                    alert("Nie znaleziono kontrahenta.");
+                    return;
+                }
+
+                const buyer = await response.json();
+
+                $("#BuyerDto_Name").val(buyer.name);
+                $("#BuyerDto_StreetAndNo").val(buyer.streetAndNo);
+                $("#BuyerDto_City").val(buyer.city);
+                $("#BuyerDto_Postcode").val(buyer.postcode);
+                $("#BuyerDto_VATID").val(buyer.vatid);
+
+            } catch (err) {
+                console.error(err);
+                alert("Błąd połączenia z API MF.");
+            }
+        }
+    </script>
+}

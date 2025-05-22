@@ -1,5 +1,6 @@
 ﻿using InvoiceMaker.Application.Dto;
 using InvoiceMaker.Domain;
+using InvoiceMaker.Domain.Entities;
 using InvoiceMaker.Domain.Interfaces;
 using MediatR;
 using System;
@@ -22,41 +23,48 @@ namespace InvoiceMaker.Application.Commands.EditInvoice
 
         public async Task<Unit> Handle(EditInvoiceCommand request, CancellationToken cancellationToken)
         {
-            var invoice = await _invoiceMakerRepository.GetInvoiceById(request.Id);
-
-            invoice.IssueDate = request.IssueDate;
-            invoice.SaleDate = request.SaleDate;
-            invoice.Place = request.Place;
-            invoice.SellerId = request.SellerId;
-            invoice.BuyerId = request.BuyerId;
-            invoice.PaymentType = request.PaymentType;
-            invoice.PaymentDeadline = request.PaymentDeadline;
-            invoice.SellerSignature = request.SellerSignature;
-            invoice.BuyerSignature = request.BuyerSignature;
-            invoice.Notes = request.Notes;
-
-            invoice.Items.Clear();
-
-            foreach (var itemDto in request.Items ?? Enumerable.Empty<ItemDto>())
+            try
             {
-                var item = new Item
+                var invoice = await _invoiceMakerRepository.GetInvoiceById(request.Id);
+
+                invoice.IssueDate = request.IssueDate;
+                invoice.SaleDate = request.SaleDate;
+                invoice.Place = request.Place;
+                invoice.SellerId = request.SellerId;
+                invoice.BuyerId = request.BuyerId;
+                invoice.PaymentType = request.PaymentType;
+                invoice.PaymentDeadline = request.PaymentDeadline;
+                invoice.SellerSignature = request.SellerSignature;
+                invoice.BuyerSignature = request.BuyerSignature;
+                invoice.Notes = request.Notes;
+
+                invoice.Items.Clear();
+
+                foreach (var itemDto in request.Items ?? Enumerable.Empty<ItemDto>())
                 {
-                    Name = itemDto.Name,
-                    Position = itemDto.Position,
-                    Quantity = itemDto.Quantity,
-                    Unit = itemDto.Unit,
-                    VAT = itemDto.VAT,
-                    Netto = itemDto.Netto,
-                    Brutto = itemDto.Brutto,
-                    InvoiceId = invoice.Id
-                };
+                    var item = new Item
+                    {
+                        Name = itemDto.Name,
+                        Position = itemDto.Position,
+                        Quantity = itemDto.Quantity,
+                        Unit = itemDto.Unit,
+                        VAT = itemDto.VAT,
+                        Netto = itemDto.Netto,
+                        Brutto = itemDto.Brutto,
+                        InvoiceId = invoice.Id
+                    };
 
-                invoice.Items.Add(item);
+                    invoice.Items.Add(item);
+                }
+
+                await _invoiceMakerRepository.Commit();
+
+                return Unit.Value;
             }
-
-            await _invoiceMakerRepository.Commit();
-
-            return Unit.Value;
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Wystąpił błąd podczas edytowania faktury.", ex);
+            }
         }
     }
 }
