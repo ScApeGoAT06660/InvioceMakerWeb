@@ -21,7 +21,7 @@ namespace InvoiceMaker.Infrastructure.Extensions
         public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<InvoiceMakerDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("InvoiceMaker")));
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<InvoiceMakerDbContext>();
 
